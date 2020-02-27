@@ -29,6 +29,16 @@ class S3UploadException(Exception):
 
 
 class S3BackedSerializer(Codec):
+    """Faust serializer that serializes large messages on Amazon S3.
+
+    If the message size exceeds a defined threshold, the payload is uploaded to Amazon S3.
+    The message forwarded to Kafka contains a flag if the message has been backed or not.
+    In case it was backed, the flag is followed by the URI of the S3 object.
+    If the message was not backed, it contains the actual serialized message.
+
+    """
+
+
     VALUE_PREFIX = "values"
     KEY_PREFIX = "keys"
 
