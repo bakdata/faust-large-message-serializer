@@ -1,0 +1,10 @@
+trigger:
+  branches:
+    include:
+      - refs/heads/*
+      - refs/tags/*
+
+pr:
+  branches:
+    include:
+    - master
