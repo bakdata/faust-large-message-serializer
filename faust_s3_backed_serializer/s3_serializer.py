@@ -42,19 +42,21 @@ class S3BackedSerializer(Codec):
         output_topic : str
             Topic where the data is sent to. Is used as part of the S3 object's name
         base_path: str
-            S3 bucket name with the 's3://' uri protocol. Example 's3://bucket-name'
+            Base path to store data. Must include bucket and any prefix that should be used, e.g.,
+            's3://my-bucket/my/prefix/'.
         region: str
-            S3 region where the bucket is. Example 'eu-central-1'
+            S3 region to use. Must be configured in conjunction. e.g., 'eu-central-1'
         s3_credentials: Dict[str, str]
+            AWS secret key to use for connecting to S3. Leave empty if AWS credential provider chain should be used.
             The s3_credentials dictionary should have the following properties::
                 {
                     's3backed.access.key': 'my_s3_user_key',
                     's3backed.secret.key': 'my_s3_secret_key'
                 }
         max_size: int
-            The limit of bytes that the serializer use to know when it should upload data to the s3 bucket.
+            Maximum serialized message size in bytes before messages are stored on S3.
         is_key: bool
-            Variable to indicate serializer to serialize a key or a value.
+            Variable to indicate the serializer to serialize a key or a value.
         **kwargs: Dict
             Extra keyword arguments.
 
