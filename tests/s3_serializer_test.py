@@ -1,10 +1,28 @@
+#  MIT License
+#  Copyright (c) 2020 bakdata
+#  Permission is hereby granted, free of charge, to any person obtaining a copy
+#  of this software and associated documentation files (the "Software"), to deal
+#  in the Software without restriction, including without limitation the rights
+#  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+#  copies of the Software, and to permit persons to whom the Software is
+#  furnished to do so, subject to the following conditions:
+#  The above copyright notice and this permission notice shall be included in all
+#  copies or substantial portions of the Software.
+#  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+#  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+#  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+#  SOFTWARE.
+
 from io import BytesIO
 from typing import Callable
 from unittest.mock import patch
 import pytest
 import boto3
 from botocore.stub import Stubber
-from faust_s3_backed_serializer.s3_serializer import FaustS3Serializer, S3UploadException
+from faust_s3_backed_serializer.s3_serializer import S3BackedSerializer, S3UploadException
 from tests.utils import parse_uri_s3_serde
 
 
@@ -51,10 +69,10 @@ def s3_client_get():
 
 
 @pytest.fixture
-def s3_serializer_factory() -> Callable[[int, bool], FaustS3Serializer]:
-    def partial_factory(max_size: int, is_key: bool) -> FaustS3Serializer:
+def s3_serializer_factory() -> Callable[[int, bool], S3BackedSerializer]:
+    def partial_factory(max_size: int, is_key: bool) -> S3BackedSerializer:
         credentials = {}
-        return FaustS3Serializer("dummy_topic", "s3://bucket-name/", "eu-central-1", credentials, max_size, is_key)
+        return S3BackedSerializer("dummy_topic", "s3://bucket-name/", "eu-central-1", credentials, max_size, is_key)
 
     return partial_factory
 
