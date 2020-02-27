@@ -1,0 +1,1 @@
+# faust-s3-backed-serializer
