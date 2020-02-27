@@ -10,19 +10,19 @@ class S3UploadException(Exception):
     pass
 
 
-class FaustS3Serializer(Codec):
+class S3BackedSerializer(Codec):
     VALUE_PREFIX = "values"
     KEY_PREFIX = "keys"
 
     def __init__(self, output_topic: str, base_path: str, region_name: str, s3_credentials: Dict[str, str],
-                 max_size: int = int(1e9),
+                 max_size: int = int(1e6),
                  is_key=False,
                  **kwargs):
         """
         Parameters
         ----------
         output_topic : str
-            Output topic to upload the data to s3
+            Topic where the data is sent to. Is used as part of the S3 object's name
         base_path: str
             S3 bucket name with the 's3://' uri protocol. Example 's3://bucket-name'
         region: str
