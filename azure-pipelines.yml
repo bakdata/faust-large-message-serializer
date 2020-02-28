@@ -17,12 +17,12 @@ jobs:
     inputs:
       versionSpec: '$(python.version)'
 
-  - script: pip install -r requirements.txt
-    displayName: 'Install requirements'
+  - script: pip install flit
+    displayName: 'Install flit build tool'
 
-  - script: |
-      pip install pytest
-      pip install pytest-cov
-      pytest tests
+  - script: flit install --symlink
+    displayName: 'Install library and its dependencies'
+
+  - script: pytest
     displayName: 'Test with pytest'
 

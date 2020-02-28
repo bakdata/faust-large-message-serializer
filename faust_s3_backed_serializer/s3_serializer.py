@@ -72,14 +72,13 @@ class S3BackedSerializer(Codec):
 
         Returns
         -------
-        FaustS3Serializer
-            Serializer to upload object to a bucket
+        S3BackedSerializer
+            Faust serializer that serializes large messages on Amazon S3
 
         Raises
         ------
         ValueError
             If 'base_path' param is empty or not given
-            If 'region_name' param is empty or not given
         """
 
         super().__init__(output_topic=output_topic, base_path=base_path, max_size=max_size,
