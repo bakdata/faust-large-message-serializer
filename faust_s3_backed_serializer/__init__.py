@@ -16,5 +16,9 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 
+"""Faust serializer that serializes large messages on Amazon S3"""
+
+__version__ = '1.0.0'
+
 from faust_s3_backed_serializer.s3_serializer import S3BackedSerializer
 from faust_s3_backed_serializer.s3_serializer import S3UploadException
