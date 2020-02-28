@@ -6,7 +6,7 @@ build-backend = "flit.buildapi"
 [tool.flit.metadata]
 module = "faust_s3_backed_serializer"
 author = "bakdata"
-author-email = "tiangolo@gmail.com"
+author-email = "opensource@bakdata.com"
 home-page = "https://github.com/bakdata/faust-s3-backed-serializer"
 description-file="README.md"
 requires-python = ">=3.6"
