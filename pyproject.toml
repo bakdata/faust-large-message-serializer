@@ -34,6 +34,5 @@ classifiers = [
 test = [
     "pytest",
     "pytest-cov",
-    "boto3",
     "botocore"
 ]
