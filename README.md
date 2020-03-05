@@ -43,8 +43,8 @@ credentials = { # you can also leave the fields empty in order to use the defaul
     's3backed.secret.key': 'secret_key'
 }
 
-
-s3_backed_serializer = S3BackedSerializer("s3_users", "s3://you-bucket-name/", "eu-central-1", credentials, 0, False)
+topic_name = "users_s3"
+s3_backed_serializer = S3BackedSerializer(output_topic=topic_name, base_path="s3://you-bucket-name/", region_name="eu-central-1", s3_credentials=credentials, max_size=0, is_key=False)
 json_serializer = codecs.get_codec("json")
 
 # Here we use json as the first serializer and
@@ -55,7 +55,7 @@ s3_json_serializer = json_serializer | s3_backed_serializer
 logger = logging.getLogger(__name__)
 codecs.register("s3_json", s3_json_serializer)
 app = faust.App("app_id", broker="kafka://localhost:9092")
-users_topic = app.topic('users_s3', value_type=UserModel)
+users_topic = app.topic(topic_name, value_type=UserModel)
 
 
 @app.agent(users_topic)
