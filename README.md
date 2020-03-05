@@ -8,7 +8,7 @@ A Faust Serializer that reads and writes records from and to S3 transparently.
 
 This serializer is compatible with our [Kafka S3-backed SerDe](https://github.com/bakdata/kafka-s3-backed-serde) for Java.
 
-Read more about it on our [blog](https://medium.com/bakdata/processing-large-messages-with-kafka-streams-167a166ca38b)
+Read more about it on our [blog](https://medium.com/bakdata/processing-large-messages-with-kafka-streams-167a166ca38b).
 
 # Getting Started
 
@@ -38,13 +38,20 @@ class UserModel(Record, serializer="s3_json"):
 
 
 # Declare the serializers
-credentials = { # you can also leave the fields empty in order to use the default AWS credential chain
+credentials = { 
+# you can also leave the fields empty 
+# in order to use the default AWS credential chain
     's3backed.access.key': 'access_key',
     's3backed.secret.key': 'secret_key'
 }
 
 topic_name = "users_s3"
-s3_backed_serializer = S3BackedSerializer(output_topic=topic_name, base_path="s3://you-bucket-name/", region_name="eu-central-1", s3_credentials=credentials, max_size=0, is_key=False)
+s3_backed_serializer = S3BackedSerializer(output_topic="topic_name",
+                                          base_path="s3://you-bucket-name/",
+                                          region_name="eu-central-1",
+                                          s3_credentials=credentials, 
+                                          max_size=0,
+                                          is_key=False)
 json_serializer = codecs.get_codec("json")
 
 # Here we use json as the first serializer and
