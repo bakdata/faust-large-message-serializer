@@ -42,7 +42,7 @@ class S3BackedSerializer(Codec):
     VALUE_PREFIX = "values"
     KEY_PREFIX = "keys"
 
-    def __init__(self, output_topic: str, base_path: str, region_name: str, s3_credentials: Dict[str, str],
+    def __init__(self, output_topic: str, base_path: str, region_name: str, s3_credentials: Dict[str, str] = None,
                  max_size: int = int(1e6),
                  is_key=False,
                  **kwargs):
@@ -146,7 +146,7 @@ class S3BackedSerializer(Codec):
     def _build_s3_credentials(self, config: Dict[str, str]) -> Dict[str, str]:
         credentials = {}
 
-        if not config.get("s3backed.access.key") or not config.get("s3backed.secret.key"):
+        if not config or not config.get("s3backed.access.key") or not config.get("s3backed.secret.key"):
             return credentials
 
         credentials.update(aws_access_key_id=config["s3backed.access.key"])
