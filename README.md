@@ -46,8 +46,8 @@ credentials = {
 }
 
 topic_name = "users_s3"
-s3_backed_serializer = S3BackedSerializer(output_topic="topic_name",
-                                          base_path="s3://you-bucket-name/",
+s3_backed_serializer = S3BackedSerializer(output_topic=topic_name,
+                                          base_path="s3://your-bucket-name/",
                                           region_name="eu-central-1",
                                           s3_credentials=credentials, 
                                           max_size=0,
