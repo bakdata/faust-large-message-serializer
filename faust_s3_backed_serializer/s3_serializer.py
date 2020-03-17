@@ -79,7 +79,7 @@ class S3BackedSerializer(Codec):
         ------
         ValueError
             If 'base_path' param is empty or not given
-            If 'base_'
+            If 'output_topic' params is empty or not given
 
         """
 
