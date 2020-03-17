@@ -38,11 +38,11 @@ class S3BackedSerializer(Codec):
 
     """
 
-
     VALUE_PREFIX = "values"
     KEY_PREFIX = "keys"
 
-    def __init__(self, output_topic: str, base_path: str, region_name: str, s3_credentials: Dict[str, str] = None,
+    def __init__(self, output_topic: str = None, base_path: str = None, region_name: str = None,
+                 s3_credentials: Dict[str, str] = None,
                  max_size: int = int(1e6),
                  is_key=False,
                  **kwargs):
@@ -79,20 +79,26 @@ class S3BackedSerializer(Codec):
         ------
         ValueError
             If 'base_path' param is empty or not given
+            If 'base_'
+
         """
 
         super().__init__(output_topic=output_topic, base_path=base_path, max_size=max_size,
                          s3_credentials=s3_credentials, region_name=region_name,
                          **kwargs)
 
+        self._base_path = base_path
+        self._max_size = max_size
+        self._is_key = is_key
+        self._output_topic = output_topic
+        self._verify_params()
+
         self._credentials = self._build_s3_credentials(s3_credentials)
         self._s3_config = dict(self._credentials)
         self._s3_config.update(region_name=region_name)
-        self._output_topic = output_topic
         self._s3_bucket = self._parse_bucket_from_base_path(base_path)
         self._s3_client = boto3.client("s3", **self._s3_config)
-        self._max_size = max_size
-        self._is_key = is_key
+
 
     def _parse_bucket_from_base_path(self, base_path: str) -> str:
         parsed_url = urlparse(base_path)
@@ -153,3 +159,10 @@ class S3BackedSerializer(Codec):
         credentials.update(aws_secret_access_key=config["s3backed.secret.key"])
 
         return credentials
+
+
+    def _verify_params(self):
+        if self._base_path is None:
+            raise ValueError("base_path should not be None")
+        if self._output_topic is None:
+            raise ValueError("output_topic should not be None")
