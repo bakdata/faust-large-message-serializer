@@ -50,14 +50,14 @@ class S3BackedSerializer(Codec):
         """
         Parameters
         ----------
-        output_topic : str
+        output_topic : Optional[str]
             Topic where the data is sent to. Is used as part of the S3 object's name
-        base_path: str
+        base_path: Optional[str]
             Base path to store data. Must include bucket and any prefix that should be used, e.g.,
             's3://my-bucket/my/prefix/'.
         region: str
             S3 region to use. Must be configured in conjunction. e.g., 'eu-central-1'
-        s3_credentials: Dict[str, str]
+        s3_credentials: Optional[Dict[str, str]]
             AWS secret key to use for connecting to S3. Leave empty if AWS credential provider chain should be used.
             The s3_credentials dictionary should have the following properties::
                 {
