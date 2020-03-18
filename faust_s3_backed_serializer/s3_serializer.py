@@ -79,8 +79,8 @@ class S3BackedSerializer(Codec):
         Raises
         ------
         ValueError
-            If 'base_path' param is empty or not given
-            If 'output_topic' params is empty or not given
+            If 'base_path' param is empty or not given when dumps is called and message is too large
+            If 'output_topic' params is empty or not given when dumps is called and message is too large
 
         """
 
