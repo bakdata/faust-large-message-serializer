@@ -143,12 +143,15 @@ def test_dumps_from_s3_serde_max_size_value(s3_serializer_factory):
 
 
 def test_base_params():
+    dummy_bytes = b"dummy-bytes"
     with pytest.raises(ValueError) as e:
-        serializer = S3BackedSerializer(output_topic="output_topic")
+        serializer = S3BackedSerializer(output_topic="output_topic", max_size=0)
+        serializer.dumps(dummy_bytes)
+
+    assert str(e.value) == "base_path should not be None"
 
     with pytest.raises(ValueError) as e:
-        serializer = S3BackedSerializer(base_path="s3://something")
+        serializer = S3BackedSerializer(base_path="s3://something",max_size=0)
+        serializer.dumps(dummy_bytes)
 
     assert str(e.value) == "output_topic should not be None"
-
-
