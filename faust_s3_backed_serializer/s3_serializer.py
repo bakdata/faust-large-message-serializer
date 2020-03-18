@@ -44,8 +44,8 @@ class S3BackedSerializer(Codec):
     def __init__(self, output_topic: Optional[str] = None, base_path: Optional[str] = None,
                  region_name: Optional[str] = None,
                  s3_credentials: Optional[Dict[str, str]] = None,
-                 max_size: Optional[int] = int(1e6),
-                 is_key: Optional[bool] = False,
+                 max_size: int = int(1e6),
+                 is_key: bool = False,
                  **kwargs):
         """
         Parameters
