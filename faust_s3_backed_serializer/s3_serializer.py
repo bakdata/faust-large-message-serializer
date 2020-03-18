@@ -16,7 +16,7 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 
-from typing import Any, Tuple
+from typing import Any, Tuple, Optional
 import boto3
 from faust import Codec
 from urllib.parse import urlparse
@@ -38,25 +38,26 @@ class S3BackedSerializer(Codec):
 
     """
 
-
     VALUE_PREFIX = "values"
     KEY_PREFIX = "keys"
 
-    def __init__(self, output_topic: str, base_path: str, region_name: str, s3_credentials: Dict[str, str] = None,
+    def __init__(self, output_topic: Optional[str] = None, base_path: Optional[str] = None,
+                 region_name: Optional[str] = None,
+                 s3_credentials: Optional[Dict[str, str]] = None,
                  max_size: int = int(1e6),
-                 is_key=False,
+                 is_key: bool = False,
                  **kwargs):
         """
         Parameters
         ----------
-        output_topic : str
+        output_topic : Optional[str]
             Topic where the data is sent to. Is used as part of the S3 object's name
-        base_path: str
+        base_path: Optional[str]
             Base path to store data. Must include bucket and any prefix that should be used, e.g.,
             's3://my-bucket/my/prefix/'.
         region: str
             S3 region to use. Must be configured in conjunction. e.g., 'eu-central-1'
-        s3_credentials: Dict[str, str]
+        s3_credentials: Optional[Dict[str, str]]
             AWS secret key to use for connecting to S3. Leave empty if AWS credential provider chain should be used.
             The s3_credentials dictionary should have the following properties::
                 {
@@ -78,21 +79,25 @@ class S3BackedSerializer(Codec):
         Raises
         ------
         ValueError
-            If 'base_path' param is empty or not given
+            If 'base_path' param is empty or not given when dumps is called and message is too large
+            If 'output_topic' params is empty or not given when dumps is called and message is too large
+
         """
 
         super().__init__(output_topic=output_topic, base_path=base_path, max_size=max_size,
                          s3_credentials=s3_credentials, region_name=region_name,
                          **kwargs)
 
+        self._base_path = base_path
+        self._max_size = max_size
+        self._is_key = is_key
+        self._output_topic = output_topic
+
         self._credentials = self._build_s3_credentials(s3_credentials)
         self._s3_config = dict(self._credentials)
         self._s3_config.update(region_name=region_name)
-        self._output_topic = output_topic
         self._s3_bucket = self._parse_bucket_from_base_path(base_path)
         self._s3_client = boto3.client("s3", **self._s3_config)
-        self._max_size = max_size
-        self._is_key = is_key
 
     def _parse_bucket_from_base_path(self, base_path: str) -> str:
         parsed_url = urlparse(base_path)
@@ -122,6 +127,7 @@ class S3BackedSerializer(Codec):
     def _dumps(self, data: Any) -> bytes:
         length_obj = len(data)
         if length_obj > self._max_size:
+            self._verify_params()
             key = self._generate_key(self._output_topic, self._is_key)
             response = self._s3_client.put_object(Bucket=self._s3_bucket, Key=key, Body=data)
             if response["ResponseMetadata"]["HTTPStatusCode"] == 200:
@@ -153,3 +159,9 @@ class S3BackedSerializer(Codec):
         credentials.update(aws_secret_access_key=config["s3backed.secret.key"])
 
         return credentials
+
+    def _verify_params(self):
+        if self._base_path is None:
+            raise ValueError("base_path should not be None")
+        if self._output_topic is None:
+            raise ValueError("output_topic should not be None")

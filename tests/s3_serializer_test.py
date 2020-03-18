@@ -108,7 +108,7 @@ def test_dumps_from_s3_serde_min_size_value_error(s3_serializer_factory, s3_clie
         with pytest.raises(S3UploadException) as e:
             data_bytes = b"this is my data"
             s3_uri = s3_serializer_min_size.dumps(data_bytes)
-            assert e.value == "The S3 client couldn't upload the data to the s3 bucket"
+        assert str(e.value) == "The S3 client couldn't upload the data to the s3 bucket"
 
 
 def test_dumps_from_s3_serde_min_size_key(s3_serializer_factory, s3_client_put):
@@ -140,3 +140,18 @@ def test_dumps_from_s3_serde_max_size_value(s3_serializer_factory):
     data_bytes = b"\x00this is my data"
     s3_same_object = s3_serializer_max_size.loads(data_bytes)
     assert data_bytes[1:] == s3_same_object, "The output should be the same without the signal byte"
+
+
+def test_base_params():
+    dummy_bytes = b"dummy-bytes"
+    with pytest.raises(ValueError) as e:
+        serializer = S3BackedSerializer(output_topic="output_topic", max_size=0)
+        serializer.dumps(dummy_bytes)
+
+    assert str(e.value) == "base_path should not be None"
+
+    with pytest.raises(ValueError) as e:
+        serializer = S3BackedSerializer(base_path="s3://something",max_size=0)
+        serializer.dumps(dummy_bytes)
+
+    assert str(e.value) == "output_topic should not be None"
