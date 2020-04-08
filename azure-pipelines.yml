@@ -1,33 +1,29 @@
 
-jobs:
-- job: 'Test'
-  pool:
-    vmImage: 'ubuntu-16.04'
-  strategy:
-    matrix:
-      Python36:
-        python.version: '3.6'
-      Python37:
-        python.version: '3.7'
-      Python38:
-        python.version: '3.8'
+stages:
+- stage: Testing
+  jobs:
+  - job: 'Test'
+    pool:
+      vmImage: 'ubuntu-16.04'
+    strategy:
+      matrix:
+        Python36:
+          python.version: '3.6'
+        Python37:
+          python.version: '3.7'
+        Python38:
+          python.version: '3.8'
 
-  steps:
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '$(python.version)'
+    steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '$(python.version)'
 
-  - script: pip install flit
-    displayName: 'Install flit build tool'
+    - script: pip install flit
+      displayName: 'Install flit build tool'
 
-  - script: flit install --symlink
-    displayName: 'Install library and its dependencies'
+    - script: flit install --symlink
+      displayName: 'Install library and its dependencies'
 
-  - script: pytest
-    displayName: 'Test with pytest'
-
-  - task: ReleasePiPyTest@0
-    displayName: "Release test"
-
-  - script: echo "Hello"
-    displayName: "Testing echo"
+    - script: pytest
+      displayName: 'Test with pytest'
