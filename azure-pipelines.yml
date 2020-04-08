@@ -26,3 +26,8 @@ jobs:
   - script: pytest
     displayName: 'Test with pytest'
 
+  - task: ReleasePiPyTest@0
+    displayName: "Release test"
+
+  - script: echo "Hello"
+    displayName: "Testing echo"
