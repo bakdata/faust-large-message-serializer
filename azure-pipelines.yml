@@ -30,7 +30,7 @@ stages:
 
 - stage: "Publish"
   jobs:
-    - job: "Flit Publish"
+    - job: "FlitPublish"
       steps:
         - script: echo "Here is a test of a stage"
           displayName: "Test publish"
