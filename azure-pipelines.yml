@@ -32,9 +32,7 @@ stages:
       displayName: 'Test with pytest'
 
 - stage: "Publish"
-
-
-
+  condition: and(succeeded(), eq(variables['release.version'], ''), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   pool:
     vmImage: 'ubuntu-16.04'
   jobs:
@@ -58,13 +56,13 @@ stages:
             git config user.email "31185348+bakdata-bot@users.noreply.github.com"
             git config user.name "bakdata-bot"
             git fetch
-            git checkout feature/$(Build.SourceBranchName)
+            git checkout master
           displayName: "Setting GitHub author"
 
         - script: bump2version patch
           displayName: "Bump version"
 
-        - script: git push --follow-tags origin feature/$(Build.SourceBranchName)
+        - script: git push --follow-tags origin master
           displayName: "Pushing tag to github"
 
         - script: flit publish
