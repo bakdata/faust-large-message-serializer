@@ -29,8 +29,9 @@ stages:
       displayName: 'Test with pytest'
 
 - stage: "Publish"
+  env:
   jobs:
-    - job: "FlitPublish"
+    - job: "ConfigurateGit"
       steps:
-        - script: echo "Here is a test of a stage"
+        - script: echo "Here is $(Build.SourceBranchName)"
           displayName: "Test publish"
