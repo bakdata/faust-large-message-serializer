@@ -47,6 +47,9 @@ stages:
         - script: |
             git config user.email "31185348+bakdata-bot@users.noreply.github.com"
             git config user.name "bakdata-bot"
+            git fetch
+            git status
+            git branch
           displayName: "Setting GitHub author"
 
         - script: bump2version minor
