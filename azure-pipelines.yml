@@ -23,4 +23,4 @@ resources:
 
 
 stages:
-  - template: azure/gradle/python-artifact.yml@templates
+  - template: azure/python/python-artifact.yml@templates
