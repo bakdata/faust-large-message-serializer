@@ -1,4 +1,7 @@
 
+variables:
+- group: testpipy
+
 stages:
 - stage: Testing
   jobs:
