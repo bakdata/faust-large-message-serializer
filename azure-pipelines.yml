@@ -1,6 +1,6 @@
 
 variables:
-- group: testpipy
+- group: testpypi
 
 stages:
 - stage: Testing
