@@ -47,7 +47,11 @@ stages:
         - script: |
             git config user.email "31185348+bakdata-bot@users.noreply.github.com"
             git config user.name "bakdata-bot"
-          displayName: "Setting github author"
+          displayName: "Setting GitHub author"
 
-        - script: bump2version --version
+        - script: bump2version minor
           displayName: "Bump version"
+
+        - script: git push --follow-tags origin $(Build.SourceBranchName)
+          displayName: "Pushing tag to github"
+
