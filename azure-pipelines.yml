@@ -29,7 +29,6 @@ stages:
       displayName: 'Test with pytest'
 
 - stage: "Publish"
-  env:
   jobs:
     - job: "ConfigurateGit"
       steps:
