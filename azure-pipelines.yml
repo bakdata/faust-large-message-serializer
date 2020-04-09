@@ -58,21 +58,16 @@ stages:
             git checkout feature/$(Build.SourceBranchName)
           displayName: "Setting GitHub author"
 
-        #- script: bump2version minor
-        #  displayName: "Bump version"
+        - script: bump2version patch
+          displayName: "Bump version"
 
-        #- script: git push --follow-tags origin feature/$(Build.SourceBranchName)
-        #  displayName: "Pushing tag to github"
+        - script: git push --follow-tags origin feature/$(Build.SourceBranchName)
+          displayName: "Pushing tag to github"
 
-        - script: echo $FLIT_USERNAME
+        - script: flit publish
+          displayName: "Publish to PyPi"
           env:
             FLIT_USERNAME: $(testpypi.username)
             FLIT_PASSWORD: $(testpypi.password)
             FLIT_INDEX_URL: "https://test.pypi.org/legacy/"
             FLIT_ROOT_INSTALL: 1
-          displayName: "Showing Username"
-
-
-        #- script: flit publish
-        #  displayName: "Publish to PyPi"
-
