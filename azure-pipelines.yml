@@ -50,12 +50,12 @@ stages:
             git fetch
             git status
             git branch
-            git checkout -b $(Build.SourceBranchName) origin/git $(Build.SourceBranchName)
+            git checkout feature/$(Build.SourceBranchName)
           displayName: "Setting GitHub author"
 
         - script: bump2version minor
           displayName: "Bump version"
 
-        - script: git push --follow-tags origin $(Build.SourceBranchName)
+        - script: git push --follow-tags origin feature/$(Build.SourceBranchName)
           displayName: "Pushing tag to github"
 
