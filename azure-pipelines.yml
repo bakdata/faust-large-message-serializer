@@ -1,73 +1,26 @@
 
+trigger:
+  branches:
+    include:
+      - refs/heads/*
+      - refs/tags/*
+pr:
+  branches:
+    include:
+    - master
+
 variables:
 - group: testpypi
 
+
+resources:
+  repositories:
+    - repository: templates
+      type: github
+      name: bakdata/bakdata-project-templates
+      endpoint: bot
+      ref: feature/python
+
+
 stages:
-- stage: Testing
-  jobs:
-  - job: 'Test'
-    pool:
-      vmImage: 'ubuntu-16.04'
-    strategy:
-      matrix:
-        Python36:
-          python.version: '3.6'
-        Python37:
-          python.version: '3.7'
-        Python38:
-          python.version: '3.8'
-
-    steps:
-    - task: UsePythonVersion@0
-      inputs:
-        versionSpec: '$(python.version)'
-
-    - script: pip install flit
-      displayName: 'Install flit build tool'
-
-    - script: flit install --symlink
-      displayName: 'Install library and its dependencies'
-
-    - script: pytest
-      displayName: 'Test with pytest'
-
-- stage: "Publish"
-  condition: and(succeeded(), eq(variables['release.version'], ''), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-  pool:
-    vmImage: 'ubuntu-16.04'
-  jobs:
-    - job: "PublishPyPi"
-      steps:
-
-        - checkout: self
-          persistCredentials: true
-
-        - task: UsePythonVersion@0
-          inputs:
-            versionSpec: '3.8'
-
-        - script: pip install flit
-          displayName: "Install flit"
-
-        - script: flit install
-          displayName: "Install library"
-
-        - script: |
-            git config user.email "31185348+bakdata-bot@users.noreply.github.com"
-            git config user.name "bakdata-bot"
-            git fetch
-            git checkout master
-          displayName: "Setting GitHub author"
-
-        - script: bump2version $(release.version)
-          displayName: "Bump version"
-
-        - script: git push --follow-tags origin master
-          displayName: "Pushing tag to github"
-
-        - script: flit publish
-          displayName: "Publish to PyPi"
-          env:
-            FLIT_USERNAME: $(testpypi.username)
-            FLIT_PASSWORD: $(testpypi.password)
-            FLIT_ROOT_INSTALL: 1
+  - template: azure/gradle/python-artifact.yml@templates
