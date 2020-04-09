@@ -31,8 +31,8 @@ stages:
 - stage: "Publish"
 
   variables:
-    FLIT_USERNAME: "${{testpypi.password}}"
-    FLIT_PASSWORD: "${{testpypi.username}}"
+    FLIT_USERNAME: $(testpypi.password)
+    FLIT_PASSWORD: $(testpypi.username)
     FLIT_INDEX_URL: "https://test.pypi.org/legacy/"
     FLIT_ROOT_INSTALL: 1
 
