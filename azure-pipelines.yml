@@ -50,7 +50,7 @@ stages:
             git fetch
             git status
             git branch
-            git checkout $(Build.SourceBranchName)
+            git checkout -b $(Build.SourceBranchName) origin/git $(Build.SourceBranchName)
           displayName: "Setting GitHub author"
 
         - script: bump2version minor
