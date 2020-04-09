@@ -29,8 +29,21 @@ stages:
       displayName: 'Test with pytest'
 
 - stage: "Publish"
+  pool:
+    vmImage: 'ubuntu-16.04'
   jobs:
+    - job: "Prepare enviroment"
+      steps:
+        - script: pip install flit
+          displayName: "Install flit"
+        - script: flit install
+          displayName: "Install library"
     - job: "ConfigurateGit"
       steps:
-        - script: echo "Here is $(Build.SourceBranchName)"
-          displayName: "Test publish"
+        - script: |
+            git config user.email "31185348+bakdata-bot@users.noreply.github.com"
+            git config user.name "bakdata-bot"
+          displayName: "Setting github author"
+    - job: "IncrementVersion"
+      steps:
+        - script: bump2version --version
