@@ -27,3 +27,10 @@ stages:
 
     - script: pytest
       displayName: 'Test with pytest'
+
+- stage: "Publish"
+  jobs:
+    - job: "Flit Publish"
+      steps:
+        - script: echo "Here is a test of a stage"
+          displayName: "Test publish"
