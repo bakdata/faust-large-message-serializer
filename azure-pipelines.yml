@@ -32,7 +32,7 @@ stages:
   pool:
     vmImage: 'ubuntu-16.04'
   jobs:
-    - job: "Prepare enviroment"
+    - job: "PrepareEnviroment"
       steps:
         - script: pip install flit
           displayName: "Install flit"
