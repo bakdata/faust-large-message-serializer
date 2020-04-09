@@ -67,6 +67,10 @@ stages:
         - script: git push --follow-tags origin feature/$(Build.SourceBranchName)
           displayName: "Pushing tag to github"
 
+        - script: echo $FLIT_USERNAME
+          displayName: "Showing Username"
+
+
         - script: flit publish
           displayName: "Publish to PyPi"
 
