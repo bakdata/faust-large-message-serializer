@@ -30,17 +30,14 @@ stages:
 
 - stage: "Publish"
 
-  variables:
-    FLIT_USERNAME: $(testpypi.password)
-    FLIT_PASSWORD: $(testpypi.username)
-    FLIT_INDEX_URL: "https://test.pypi.org/legacy/"
-    FLIT_ROOT_INSTALL: 1
+
 
   pool:
     vmImage: 'ubuntu-16.04'
   jobs:
     - job: "PublishPyPi"
       steps:
+        -
         - checkout: self
           persistCredentials: true
 
@@ -68,6 +65,11 @@ stages:
         #  displayName: "Pushing tag to github"
 
         - script: echo $FLIT_USERNAME
+          env:
+            FLIT_USERNAME: $(testpypi.password)
+            FLIT_PASSWORD: $(testpypi.username)
+            FLIT_INDEX_URL: "https://test.pypi.org/legacy/"
+            FLIT_ROOT_INSTALL: 1
           displayName: "Showing Username"
 
 
