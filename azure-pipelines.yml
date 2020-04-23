@@ -10,7 +10,7 @@ pr:
     - master
 
 variables:
-- group: testpypi
+- group: pypi
 
 
 resources:
