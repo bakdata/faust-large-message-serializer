@@ -1,28 +1,22 @@
+trigger:
+  branches:
+    include:
+      - refs/heads/*
+      - refs/tags/*
+pr:
+  branches:
+    include:
+    - master
 
-jobs:
-- job: 'Test'
-  pool:
-    vmImage: 'ubuntu-16.04'
-  strategy:
-    matrix:
-      Python36:
-        python.version: '3.6'
-      Python37:
-        python.version: '3.7'
-      Python38:
-        python.version: '3.8'
+variables:
+- group: pypi
 
-  steps:
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '$(python.version)'
+resources:
+  repositories:
+    - repository: templates
+      type: github
+      name: bakdata/bakdata-project-templates
+      endpoint: bot
 
-  - script: pip install flit
-    displayName: 'Install flit build tool'
-
-  - script: flit install --symlink
-    displayName: 'Install library and its dependencies'
-
-  - script: pytest
-    displayName: 'Test with pytest'
-
+stages:
+  - template: azure/python/python-artifact.yml@templates
