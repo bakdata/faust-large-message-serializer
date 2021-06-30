@@ -14,7 +14,9 @@ requires-python = ">=3.6"
 requires = [
     "boto3",
     "faust",
-    "bump2version"
+    "bump2version",
+    "types-boto",
+    "azure-storage-blob"
 ]
 classifiers = [
     "Programming Language :: Python :: 3",

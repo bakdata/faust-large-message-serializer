@@ -23,6 +23,8 @@ from urllib.parse import urlparse
 import uuid
 from typing import Dict
 
+from faust_s3_backed_serializer.config import LargeMessageSerializerConfig
+
 
 class S3UploadException(Exception):
     pass
@@ -165,3 +167,4 @@ class S3BackedSerializer(Codec):
             raise ValueError("base_path should not be None")
         if self._output_topic is None:
             raise ValueError("output_topic should not be None")
+
