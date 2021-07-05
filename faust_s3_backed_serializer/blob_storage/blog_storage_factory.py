@@ -35,13 +35,13 @@ def _create_azure_blob_storage_client(
 class BlobStorageFactory:
     def __init__(self, config: LargeMessageSerializerConfig):
         self._config = config
-        self.factory_client = {
+        self._factory_client = {
             "s3": _create_s3_client,
             "abs": _create_azure_blob_storage_client,
         }
 
     def get_blob_storage_client(self) -> BlobStorageClient:
-        schema = self._get_uri_schema(self._config.base_path)
+        schema, _, _ = self._config.base_path.parse_uri()
         return self.__create_storage_client(schema, self._config)
 
     def _get_uri_schema(self, uri: str) -> str:
@@ -50,6 +50,6 @@ class BlobStorageFactory:
 
     def __create_storage_client(self, schema: str, config):
         try:
-            return self.factory_client[schema](config)
+            return self._factory_client[schema](config)
         except KeyError as e:
             raise ValueError("This schema is not supported at the moment") from e

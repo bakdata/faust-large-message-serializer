@@ -16,7 +16,8 @@ requires = [
     "faust",
     "bump2version",
     "types-boto",
-    "azure-storage-blob"
+    "azure-storage-blob",
+    "loguru"
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
