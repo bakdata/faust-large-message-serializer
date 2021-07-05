@@ -21,7 +21,7 @@ class StorageClient:
         self._config = config
         self._client = client
 
-    def store_bytes(self, topic: str, data: bytes, is_key: bool) -> Union[bytes,None]:
+    def store_bytes(self, topic: str, data: bytes, is_key: bool) -> Union[bytes, None]:
         if data is None:
             return None
 
