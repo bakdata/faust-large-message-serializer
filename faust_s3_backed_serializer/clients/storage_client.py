@@ -52,5 +52,5 @@ class StorageClient:
         return uri
 
     def __serialize(self, uri: Union[bytes, str], flag: bytes) -> bytes:
-        data_bytes = uri if isinstance(uri, bytes) else str.encode("utf-8")
+        data_bytes = uri if isinstance(uri, bytes) else uri.encode("utf-8")
         return flag + data_bytes
