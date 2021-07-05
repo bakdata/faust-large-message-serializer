@@ -1,4 +1,3 @@
-from dataclasses import InitVar
 from typing import Optional, Callable, Dict, Tuple, Union
 from urllib.parse import urlparse
 
@@ -48,5 +47,5 @@ class LargeMessageSerializerConfig:
         if self.base_path is None:
             raise ValueError("You need to give a base_path")
         self.base_path = (
-            URIParser(self.base_path) if isinstance(self.base_path, str) else base_path
+            URIParser(self.base_path) if isinstance(self.base_path, str) else self.base_path
         )

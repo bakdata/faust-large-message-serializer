@@ -22,3 +22,5 @@ __version__ = "1.0.1"
 
 from faust_s3_backed_serializer.s3_serializer import S3BackedSerializer
 from faust_s3_backed_serializer.s3_serializer import S3UploadException
+from faust_s3_backed_serializer.serializer import LargeMessageSerializer
+from faust_s3_backed_serializer.config import LargeMessageSerializerConfig

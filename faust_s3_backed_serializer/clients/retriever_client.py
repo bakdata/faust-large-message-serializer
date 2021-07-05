@@ -30,6 +30,8 @@ class RetrieverClient:
         if data[0] != self.IS_BACKED:
             raise ValueError("Message can only be marked as backed or non-backed")
 
+        return self.__retrieve_backed_bytes(data)
+
     def __retrieve_backed_bytes(self, data: bytes) -> bytes:
         uri = data.decode()
         uri_parser = URIParser(uri)
