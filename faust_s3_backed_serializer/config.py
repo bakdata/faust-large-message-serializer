@@ -1,7 +1,7 @@
 from typing import Optional, Callable, Dict, Tuple, Union
 from urllib.parse import urlparse
 
-from attr import dataclass
+from dataclasses import dataclass
 
 
 @dataclass
@@ -15,7 +15,7 @@ class URIParser:
         result = urlparse(self.base_path)
         scheme = result.scheme
         bucket = result.netloc
-        if result.path[0] == "/":
+        if len(result.path) != 0 and result.path[0] == "/":
             path = result.path[1:]
         else:
             path = result.path
@@ -30,15 +30,15 @@ class LargeMessageSerializerConfig:
     base_path: Union[str, URIParser]
     max_size: int
     output_topic: str
-    large_message_s3_secret_key: Optional[str]
-    large_message_s3_access_key: Optional[str]
-    large_message_s3_region: Optional[str]
-    large_message_s3_endpoint: Optional[str]
-    large_message_s3_role_external_id: Optional[str]
-    large_message_abs_connection_string: Optional[str]
+    large_message_s3_secret_key: Optional[str] = None
+    large_message_s3_access_key: Optional[str] = None
+    large_message_s3_region: Optional[str] = None
+    large_message_s3_endpoint: Optional[str] = None
+    large_message_s3_role_external_id: Optional[str] = None
+    large_message_abs_connection_string: Optional[str] = None
     large_message_blob_storage_custom_config: Optional[
         Callable[[Dict[str, Optional[str]]], None]
-    ]
+    ] = None
 
     def __post_init__(self):
         if not isinstance(self.base_path, str) and not isinstance(

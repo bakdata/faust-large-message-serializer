@@ -25,7 +25,7 @@ class StorageClient:
         if data is None:
             return None
 
-        if self.__needs_backing(bytes):
+        if self.__needs_backing(data):
             key = self.__create_blob_storage_key(topic, is_key)
             uri = self.__upload_to_blob_storage(key, data)
             return self.__serialize(uri, self.IS_BACKED)
@@ -35,12 +35,13 @@ class StorageClient:
     def __create_blob_storage_key(self, topic: str, is_key: bool) -> str:
         prefix = self.KEY_PREFIX if is_key else self.VALUE_PREFIX
         schema, bucket, path = self._config.base_path.parse_uri()
-        random_id = uuid4()
-        storage_path = f"{path}/{topic}/{prefix}/{random_id}"
+        random_id = str(uuid4())
+        storage_accumulated_path = [path, topic, prefix, random_id]
+        storage_path = "/".join(filter(None, storage_accumulated_path))
         return storage_path
 
     def __needs_backing(self, data: bytes) -> bool:
-        if len(data) > self.__config.max_size:
+        if len(data) > self._config.max_size:
             return True
         return False
 
