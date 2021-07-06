@@ -39,5 +39,14 @@ classifiers = [
 test = [
     "pytest",
     "pytest-cov",
-    "botocore"
+    "botocore",
+    "pytest-docker-compose"
+]
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "--docker-compose=tests/integration/docker-compose.yml"
+testpaths = [
+    "tests/unit",
+    "tests/integration",
 ]

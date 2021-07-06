@@ -111,7 +111,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-
+/tests/integration/localstack/*
 # Spyder project settings
 .spyderproject
 .spyproject

@@ -1,4 +1,4 @@
-from faust_s3_backed_serializer.blob_storage.blob_storage import BlobStorageClient
+from faust_large_message_serializer.blob_storage.blob_storage import BlobStorageClient
 
 
 class S3UploadException(Exception):

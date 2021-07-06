@@ -2,12 +2,12 @@ from urllib.parse import urlparse
 import boto3
 from azure.storage.blob import BlobServiceClient
 
-from faust_s3_backed_serializer.blob_storage.amazon_blob_storage import (
+from faust_large_message_serializer.blob_storage.amazon_blob_storage import (
     AmazonS3BlobStorage,
 )
-from faust_s3_backed_serializer.blob_storage.azure_blob_storage import AzureBlobStorage
-from faust_s3_backed_serializer.blob_storage.blob_storage import BlobStorageClient
-from faust_s3_backed_serializer.config import LargeMessageSerializerConfig
+from faust_large_message_serializer.blob_storage.azure_blob_storage import AzureBlobStorage
+from faust_large_message_serializer.blob_storage.blob_storage import BlobStorageClient
+from faust_large_message_serializer.config import LargeMessageSerializerConfig
 
 
 def _create_s3_client(config: LargeMessageSerializerConfig) -> BlobStorageClient:
@@ -16,6 +16,9 @@ def _create_s3_client(config: LargeMessageSerializerConfig) -> BlobStorageClient
         "aws_access_key_id": config.large_message_s3_access_key,
         "region_name": config.large_message_s3_region,
     }
+    if config.large_message_s3_endpoint:
+        s3_config["endpoint_url"] = config.large_message_s3_endpoint
+
     if config.large_message_blob_storage_custom_config:
         config.large_message_blob_storage_custom_config(s3_config)
     s3_client = boto3.client("s3", **s3_config)

@@ -23,7 +23,7 @@ from urllib.parse import urlparse
 import uuid
 from typing import Dict
 
-from faust_s3_backed_serializer.config import LargeMessageSerializerConfig
+from faust_large_message_serializer.config import LargeMessageSerializerConfig
 
 
 class S3UploadException(Exception):

@@ -1,8 +1,8 @@
 from typing import Union
 from uuid import uuid4
 
-from faust_s3_backed_serializer.blob_storage.blob_storage import BlobStorageClient
-from faust_s3_backed_serializer.config import LargeMessageSerializerConfig
+from faust_large_message_serializer.blob_storage.blob_storage import BlobStorageClient
+from faust_large_message_serializer.config import LargeMessageSerializerConfig
 from loguru import logger
 
 

@@ -29,12 +29,10 @@ class URIParser:
 class LargeMessageSerializerConfig:
     base_path: Union[str, URIParser]
     max_size: int
-    output_topic: str
     large_message_s3_secret_key: Optional[str] = None
     large_message_s3_access_key: Optional[str] = None
     large_message_s3_region: Optional[str] = None
     large_message_s3_endpoint: Optional[str] = None
-    large_message_s3_role_external_id: Optional[str] = None
     large_message_abs_connection_string: Optional[str] = None
     large_message_blob_storage_custom_config: Optional[
         Callable[[Dict[str, Optional[str]]], None]

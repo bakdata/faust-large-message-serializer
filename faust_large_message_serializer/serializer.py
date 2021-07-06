@@ -1,11 +1,11 @@
 from faust.serializers.codecs import Codec
 
-from faust_s3_backed_serializer.blob_storage.blog_storage_factory import (
+from faust_large_message_serializer.blob_storage.blog_storage_factory import (
     BlobStorageFactory,
 )
-from faust_s3_backed_serializer.clients.retriever_client import RetrieverClient
-from faust_s3_backed_serializer.clients.storage_client import StorageClient
-from faust_s3_backed_serializer.config import LargeMessageSerializerConfig
+from faust_large_message_serializer.clients.retriever_client import RetrieverClient
+from faust_large_message_serializer.clients.storage_client import StorageClient
+from faust_large_message_serializer.config import LargeMessageSerializerConfig
 
 
 class LargeMessageSerializer(Codec):
