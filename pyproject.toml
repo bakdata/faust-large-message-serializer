@@ -4,8 +4,8 @@ build-backend = "flit.buildapi"
 
 
 [tool.flit.metadata]
-module = "faust_s3_backed_serializer"
-dist-name = "faust-s3-backed-serializer"
+module = "faust_large_message_serializer"
+dist-name = "faust-large-message-serializer"
 author = "bakdata"
 author-email = "opensource@bakdata.com"
 home-page = "https://github.com/bakdata/faust-s3-backed-serializer"
