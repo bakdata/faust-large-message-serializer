@@ -15,3 +15,8 @@ services:
     volumes:
       - "./localstack:/tmp/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+    ports:
+      - "10000:10000"
+    command: "azurite-blob --blobHost 0.0.0.0"

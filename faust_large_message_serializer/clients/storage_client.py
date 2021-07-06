@@ -6,7 +6,7 @@ from faust_large_message_serializer.config import LargeMessageSerializerConfig
 from loguru import logger
 
 
-class StorageClient:
+class StoringClient:
 
     VALUE_PREFIX = "values"
     KEY_PREFIX = "keys"

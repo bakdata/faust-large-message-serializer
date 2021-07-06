@@ -28,8 +28,6 @@ config = LargeMessageSerializerConfig(
 output_topic = "test-serializer"
 serializer = LargeMessageSerializer(output_topic, config)
 
-
-# Invoking this fixture: 'function_scoped_container_getter' starts all services
 @pytest.fixture(scope="module")
 def wait_for_api(module_scoped_container_getter):
     """Wait for the api from my_api_service to become responsive"""

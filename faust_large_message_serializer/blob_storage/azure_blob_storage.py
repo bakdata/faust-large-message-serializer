@@ -3,23 +3,26 @@ from azure.storage.blob import BlobServiceClient
 from faust_large_message_serializer.blob_storage.blob_storage import BlobStorageClient
 
 
-class AzureBlobStorage(BlobStorageClient):
+class AzureBlobStorageClient(BlobStorageClient):
+
+    PROTOCOL = "abs"
+
     def __init__(self, abs_service_client: BlobServiceClient):
         self._abs_client = abs_service_client
 
     def delete_all_objects(self, bucket: str, prefix: str) -> None:
-        client_container = self._abs_client.get_container_client(bucket)
-        blobs_container = client_container.list_blobs(name_starts_with=prefix)
-        blob_names = [blob.name for blob in blobs_container]
-        client_container.delete_blobs(*blob_names)
+        container_client = self._abs_client.get_container_client(bucket)
+        blobs = container_client.list_blobs(name_starts_with=prefix)
+        blob_names = [blob.name for blob in blobs]
+        container_client.delete_blobs(*blob_names)
 
     def put_object(self, data: bytes, bucket: str, key: str) -> str:
-        client_container = self._abs_client.get_container_client(bucket)
-        blob_client = client_container.get_blob_client(key)
+        container_client = self._abs_client.get_container_client(bucket)
+        blob_client = container_client.get_blob_client(key)
         blob_client.upload_blob(data)
-        return f"abs://{bucket}/{key}"
+        return f"{self.PROTOCOL}://{bucket}/{key}"
 
     def get_object(self, bucket: str, key: str) -> bytes:
-        client_container = self._abs_client.get_container_client(bucket)
-        blob_client = client_container.get_blob_client(key)
+        container_client = self._abs_client.get_container_client(bucket)
+        blob_client = container_client.get_blob_client(key)
         return blob_client.download_blob().readall()
