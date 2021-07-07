@@ -1,4 +1,3 @@
-from functools import lru_cache
 from typing import Optional, Callable, Dict, Tuple, Union
 from urllib.parse import urlparse
 
@@ -6,7 +5,6 @@ from dataclasses import dataclass
 
 import boto3
 from azure.storage.blob import BlobServiceClient
-from faust_s3_backed_serializer import LargeMessageSerializerConfig
 
 from faust_large_message_serializer.blob_storage.amazon_blob_storage import (
     AmazonS3Client,
