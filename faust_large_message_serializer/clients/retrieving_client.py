@@ -17,6 +17,7 @@ class RetrievingClient:
         config: LargeMessageSerializerConfig
     ):
         self._config = config
+        self._client = config.get_blob_storage_client()
 
     def retrieve_bytes(self, data: bytes) -> Union[bytes, None]:
         if data is None:
@@ -31,10 +32,9 @@ class RetrievingClient:
         return self.__retrieve_backed_bytes(data)
 
     def __retrieve_backed_bytes(self, data: bytes) -> bytes:
-        client = self._config.get_blob_storage_client()
         uri = data[1:].decode()
         uri_parser = URIParser(uri)
         _, bucket, key = uri_parser.parse_uri()
-        blob_data = client.get_object(bucket, key)
+        blob_data = self._client.get_object(bucket, key)
         logger.debug("Extracted large message from blob storage: {}", uri_parser)
         return blob_data

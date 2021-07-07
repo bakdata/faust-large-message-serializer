@@ -18,6 +18,7 @@ class StoringClient:
         config: LargeMessageSerializerConfig
     ):
         self._config = config
+        self._client = config.get_blob_storage_client()
 
     def store_bytes(self, topic: str, data: bytes, is_key: bool) -> Union[bytes, None]:
         if data is None:
@@ -46,9 +47,8 @@ class StoringClient:
         return False
 
     def __upload_to_blob_storage(self, key: str, data: bytes) -> str:
-        client = self._config.get_blob_storage_client()
         _, bucket, _ = self._config.base_path.parse_uri()
-        uri = client.put_object(data, bucket, key)
+        uri = self._client.put_object(data, bucket, key)
         logger.debug("Stored large message on blob storage: {}", uri)
         return uri
 
