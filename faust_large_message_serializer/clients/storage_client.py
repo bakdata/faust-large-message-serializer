@@ -2,6 +2,7 @@ from typing import Union
 from uuid import uuid4
 
 from faust_large_message_serializer.blob_storage.blob_storage import BlobStorageClient
+from faust_large_message_serializer.blob_storage.blog_storage_factory import BlobStorageFactory
 from faust_large_message_serializer.config import LargeMessageSerializerConfig
 from loguru import logger
 
@@ -16,10 +17,10 @@ class StoringClient:
     def __init__(
         self,
         config: LargeMessageSerializerConfig,
-        client: BlobStorageClient,
+        factory: BlobStorageFactory,
     ):
         self._config = config
-        self._client = client
+        self._factory = factory
 
     def store_bytes(self, topic: str, data: bytes, is_key: bool) -> Union[bytes, None]:
         if data is None:
@@ -46,8 +47,9 @@ class StoringClient:
         return False
 
     def __upload_to_blob_storage(self, key: str, data: bytes) -> str:
+        client = self._factory.get_blob_storage_client()
         _, bucket, _ = self._config.base_path.parse_uri()
-        uri = self._client.put_object(data, bucket, key)
+        uri = client.put_object(data, bucket, key)
         logger.debug("Stored large message on blob storage: {}", uri)
         return uri
 

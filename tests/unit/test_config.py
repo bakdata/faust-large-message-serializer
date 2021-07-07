@@ -23,7 +23,7 @@ def test_config_callback(monkeypatch):
         fake_key,
         region,
         endpoint_url,
-        large_message_blob_storage_custom_config=config_callback
+        large_message_blob_storage_custom_config=config_callback,
     )
     monkeypatch.setattr(
         "faust_large_message_serializer.blob_storage.blog_storage_factory.boto3.client",
@@ -33,4 +33,3 @@ def test_config_callback(monkeypatch):
     storage_factory.get_blob_storage_client()
     s3_client_mock.assert_called_once()
     config_callback.assert_called_once()
-    

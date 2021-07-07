@@ -1,3 +1,4 @@
+from functools import lru_cache
 from urllib.parse import urlparse
 import boto3
 from azure.storage.blob import BlobServiceClient
@@ -45,7 +46,10 @@ class BlobStorageFactory:
             AzureBlobStorageClient.PROTOCOL: _create_azure_blob_storage_client,
         }
 
+    @lru_cache(maxsize=None)
     def get_blob_storage_client(self) -> BlobStorageClient:
+        if self._config.base_path is None:
+            raise ValueError("Base path mus not be null")
         schema, _, _ = self._config.base_path.parse_uri()
         return self.__create_storage_client(schema, self._config)
 

@@ -22,9 +22,9 @@ class LargeMessageSerializer(Codec):
         self._output_topic = output_topic
         self._config = config
         self._is_key = is_key
-        self._blob_client = BlobStorageFactory(config).get_blob_storage_client()
-        self._storage_client = StoringClient(config, self._blob_client)
-        self._retriever_client = RetrievingClient(config, self._blob_client)
+        self._blob_factory = BlobStorageFactory(config)
+        self._storage_client = StoringClient(config, self._blob_factory)
+        self._retriever_client = RetrievingClient(config, self._blob_factory)
 
     def _loads(self, s: bytes) -> bytes:
         return self._retriever_client.retrieve_bytes(s)

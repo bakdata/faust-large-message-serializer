@@ -39,12 +39,6 @@ class LargeMessageSerializerConfig:
     ] = None
 
     def __post_init__(self):
-        if not isinstance(self.base_path, str) and not isinstance(
-            self.base_path, URIParser
-        ):
-            raise ValueError("base_path should be an str or a URIParser")
-        if self.base_path is None:
-            raise ValueError("You need to give a base_path")
         self.base_path = (
             URIParser(self.base_path)
             if isinstance(self.base_path, str)
