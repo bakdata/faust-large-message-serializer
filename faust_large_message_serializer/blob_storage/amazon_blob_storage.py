@@ -13,9 +13,12 @@ class AmazonS3Client(BlobStorageClient):
         self._s3_client = s3_client
 
     def delete_all_objects(self, bucket: str, prefix: str) -> None:
-        objects_response = self._s3_client.list_objects_v2(Bucket=bucket, Prefix=prefix)
+        objects_response = self._s3_client.list_object_versions(
+            Bucket=bucket, Prefix=prefix
+        )
         key_objects = [
-            {"Key": object_s3["Key"]} for object_s3 in objects_response["Contents"]
+            {"Key": object_s3["Key"], "VersionId": object_s3["VersionId"]}
+            for object_s3 in objects_response["Versions"]
         ]
         self._s3_client.delete_objects(Bucket=bucket, Delete={"Objects": key_objects})
 

@@ -4,6 +4,7 @@ from azure.storage.blob import BlobServiceClient
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
+from faust_large_message_serializer.blob_storage.blog_storage_factory import BlobStorageFactory
 from faust_large_message_serializer.config import (
     LargeMessageSerializerConfig,
     URIParser,
@@ -75,3 +76,34 @@ def test_azure_serializer_key(wait_for_api, azure_bucket_name):
     parser_uri = URIParser(abs_uri[1:].decode())
     assert f"abs://{azure_bucket_name}/{output_topic}/keys" in parser_uri.base_path, "Schema and key-value var should correspond"
     assert binary_input == serializer.loads(abs_uri), "URI should be unbacked"
+
+
+@pytest.fixture(scope="function")
+def abs_low_level_client():
+    abs_client = BlobServiceClient.from_connection_string(config.large_message_abs_connection_string)
+    yield abs_client
+
+
+def test_azure_client_delete_all(abs_low_level_client):
+    bucket_name_delete = "test-delete-bucket"
+    container_client = abs_low_level_client.get_container_client(bucket_name_delete)
+    container_client.create_container()
+
+    factory = BlobStorageFactory(config)
+    abs_client = factory.get_blob_storage_client()
+    abs_client.put_object(b"Test 1", bucket_name_delete, "foo/first_test.txt")
+    abs_client.put_object(b"Test 2", bucket_name_delete, "foo/second_test.txt")
+    all_objects = list(container_client.list_blobs())
+    assert len(all_objects) == 2, "Should put two objects inside foo"
+
+    abs_client.put_object(b"Test 2", bucket_name_delete, "bar/third_test.txt")
+    all_objects = list(container_client.list_blobs())
+    assert len(all_objects) == 3, "Should put one objects inside bar"
+
+    abs_client.delete_all_objects(bucket_name_delete, "foo")
+    all_objects = list(container_client.list_blobs())
+    assert len(all_objects) == 1, "Should delete all foo"
+
+    abs_client.delete_all_objects(bucket_name_delete, "bar")
+    all_objects = list(container_client.list_blobs())
+    assert len(all_objects) == 0, "Should delete all bar and be empty"

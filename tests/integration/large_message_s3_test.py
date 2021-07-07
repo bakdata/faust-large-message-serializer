@@ -2,9 +2,16 @@ import pytest
 import requests
 from urllib.parse import urljoin
 import boto3
+
+from faust_large_message_serializer.blob_storage.blog_storage_factory import (
+    BlobStorageFactory,
+)
 from faust_large_message_serializer.serializer import LargeMessageSerializer
 
-from faust_large_message_serializer.config import LargeMessageSerializerConfig, URIParser
+from faust_large_message_serializer.config import (
+    LargeMessageSerializerConfig,
+    URIParser,
+)
 from urllib3.util.retry import Retry
 from requests.adapters import HTTPAdapter
 
@@ -26,6 +33,7 @@ config = LargeMessageSerializerConfig(
 )
 
 output_topic = "test-serializer"
+
 
 @pytest.fixture(scope="module")
 def wait_for_api(module_scoped_container_getter):
@@ -63,6 +71,18 @@ def s3_bucket_name():
     bucket.delete()
 
 
+@pytest.fixture(scope="function")
+def s3_low_level_client():
+    s3_config = {
+        "aws_secret_access_key": config.large_message_s3_secret_key,
+        "aws_access_key_id": config.large_message_s3_access_key,
+        "region_name": config.large_message_s3_region,
+        "endpoint_url": config.large_message_s3_endpoint,
+    }
+    s3_client = boto3.resource("s3", **s3_config)
+    yield s3_client
+
+
 def test_s3_serializer_value(wait_for_api, s3_bucket_name):
     serializer = LargeMessageSerializer(output_topic, config)
     binary_input = b"This is a test for s3"
@@ -81,3 +101,29 @@ def test_s3_serializer_key(wait_for_api, s3_bucket_name):
     parser_uri = URIParser(s3_uri[1:].decode())
     assert f"s3://{s3_bucket_name}/{output_topic}/keys" in parser_uri.base_path
     assert binary_input == serializer.loads(s3_uri)
+
+
+def test_s3_storage_client_delete_all(wait_for_api, s3_low_level_client):
+    bucket_name_delete = "test-delete-bucket"
+    bucket = s3_low_level_client.Bucket(bucket_name_delete)
+    bucket.create()
+    factory = BlobStorageFactory(config)
+    s3_client = factory.get_blob_storage_client()
+    s3_client.put_object(b"Test 1", bucket_name_delete, "foo/first_test.txt")
+    s3_client.put_object(b"Test 2", bucket_name_delete, "foo/second_test.txt")
+    all_objects = list(bucket.objects.all())
+    assert len(all_objects) == 2, "Should put two objects inside foo"
+
+    s3_client.put_object(b"Test 2", bucket_name_delete, "bar/third_test.txt")
+    all_objects = list(bucket.objects.all())
+    assert len(all_objects) == 3, "Should put one objects inside bar"
+
+    s3_client.delete_all_objects(bucket_name_delete, "foo")
+    all_objects = list(bucket.objects.all())
+    assert len(all_objects) == 1, "Should delete all foo"
+
+    s3_client.delete_all_objects(bucket_name_delete, "bar")
+    all_objects = list(bucket.objects.all())
+    assert len(all_objects) == 0, "Should delete all bar and be empty"
+
+    bucket.delete()

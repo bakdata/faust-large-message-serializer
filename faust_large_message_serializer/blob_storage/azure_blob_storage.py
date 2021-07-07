@@ -13,8 +13,9 @@ class AzureBlobStorageClient(BlobStorageClient):
     def delete_all_objects(self, bucket: str, prefix: str) -> None:
         container_client = self._abs_client.get_container_client(bucket)
         blobs = container_client.list_blobs(name_starts_with=prefix)
-        blob_names = [blob.name for blob in blobs]
-        container_client.delete_blobs(*blob_names)
+        for blob in blobs:
+            container_client.delete_blob(blob.name)
+
 
     def put_object(self, data: bytes, bucket: str, key: str) -> str:
         container_client = self._abs_client.get_container_client(bucket)
