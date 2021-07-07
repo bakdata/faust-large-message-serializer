@@ -2,7 +2,6 @@ from typing import Union
 
 from loguru import logger
 
-from faust_large_message_serializer.blob_storage.blog_storage_factory import BlobStorageFactory
 from faust_large_message_serializer.config import LargeMessageSerializerConfig, URIParser
 
 
@@ -15,11 +14,9 @@ class RetrievingClient:
 
     def __init__(
         self,
-        config: LargeMessageSerializerConfig,
-        factory: BlobStorageFactory,
+        config: LargeMessageSerializerConfig
     ):
         self._config = config
-        self._factory = factory
 
     def retrieve_bytes(self, data: bytes) -> Union[bytes, None]:
         if data is None:
@@ -34,7 +31,7 @@ class RetrievingClient:
         return self.__retrieve_backed_bytes(data)
 
     def __retrieve_backed_bytes(self, data: bytes) -> bytes:
-        client = self._factory.get_blob_storage_client()
+        client = self._config.get_blob_storage_client()
         uri = data[1:].decode()
         uri_parser = URIParser(uri)
         _, bucket, key = uri_parser.parse_uri()

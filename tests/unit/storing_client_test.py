@@ -3,9 +3,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from faust_large_message_serializer import LargeMessageSerializerConfig
-from faust_large_message_serializer.blob_storage.blog_storage_factory import (
-    BlobStorageFactory,
-)
+
 from faust_large_message_serializer.clients.storing_client import StoringClient
 
 
@@ -29,15 +27,13 @@ def test_max_size_storing_should_not_backed(monkeypatch, config_serializer):
     blob_client = MagicMock()
 
     monkeypatch.setattr(
-        "faust_large_message_serializer.blob_storage.blog_storage_factory.boto3.client",
+        "faust_large_message_serializer.config.boto3.client",
         s3_client_mock,
     )
 
-    serializer_factory = BlobStorageFactory(config_serializer)
+    monkeypatch.setattr(config_serializer, "get_blob_storage_client", blob_client)
 
-    monkeypatch.setattr(serializer_factory, "get_blob_storage_client", blob_client)
-
-    storing_client = StoringClient(config_serializer, serializer_factory)
+    storing_client = StoringClient(config_serializer)
 
     storing_client.store_bytes("test-serializer", b"Hello World", False)
 
@@ -52,15 +48,13 @@ def test_max_size_storing_should_backed(monkeypatch, config_serializer):
     config_serializer.max_size = 100000
 
     monkeypatch.setattr(
-        "faust_large_message_serializer.blob_storage.blog_storage_factory.boto3.client",
+        "faust_large_message_serializer.config.boto3.client",
         s3_client_mock,
     )
 
-    serializer_factory = BlobStorageFactory(config_serializer)
+    monkeypatch.setattr(config_serializer, "get_blob_storage_client", blob_client)
 
-    monkeypatch.setattr(serializer_factory, "get_blob_storage_client", blob_client)
-
-    storing_client = StoringClient(config_serializer, serializer_factory)
+    storing_client = StoringClient(config_serializer)
 
     storing_client.store_bytes("test-serializer", b"Hello World", False)
 
@@ -76,13 +70,11 @@ def test_base_path_should_defined_when_backed(monkeypatch, config_serializer):
     config_serializer.base_path = None
 
     monkeypatch.setattr(
-        "faust_large_message_serializer.blob_storage.blog_storage_factory.boto3.client",
+        "faust_large_message_serializer.config.boto3.client",
         s3_client_mock,
     )
 
-    serializer_factory = BlobStorageFactory(config_serializer)
-
-    storing_client = StoringClient(config_serializer, serializer_factory)
+    storing_client = StoringClient(config_serializer)
 
     with pytest.raises(ValueError) as e:
         storing_client.store_bytes("test-serializer", b"Hello World", False)

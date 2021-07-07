@@ -4,7 +4,6 @@ from azure.storage.blob import BlobServiceClient
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
-from faust_large_message_serializer.blob_storage.blog_storage_factory import BlobStorageFactory
 from faust_large_message_serializer.config import (
     LargeMessageSerializerConfig,
     URIParser,
@@ -89,8 +88,7 @@ def test_azure_client_delete_all(abs_low_level_client):
     container_client = abs_low_level_client.get_container_client(bucket_name_delete)
     container_client.create_container()
 
-    factory = BlobStorageFactory(config)
-    abs_client = factory.get_blob_storage_client()
+    abs_client = config.get_blob_storage_client()
     abs_client.put_object(b"Test 1", bucket_name_delete, "foo/first_test.txt")
     abs_client.put_object(b"Test 2", bucket_name_delete, "foo/second_test.txt")
     all_objects = list(container_client.list_blobs())

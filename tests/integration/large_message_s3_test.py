@@ -3,9 +3,7 @@ import requests
 from urllib.parse import urljoin
 import boto3
 
-from faust_large_message_serializer.blob_storage.blog_storage_factory import (
-    BlobStorageFactory,
-)
+
 from faust_large_message_serializer.serializer import LargeMessageSerializer
 
 from faust_large_message_serializer.config import (
@@ -107,8 +105,7 @@ def test_s3_storage_client_delete_all(wait_for_api, s3_low_level_client):
     bucket_name_delete = "test-delete-bucket"
     bucket = s3_low_level_client.Bucket(bucket_name_delete)
     bucket.create()
-    factory = BlobStorageFactory(config)
-    s3_client = factory.get_blob_storage_client()
+    s3_client = config.get_blob_storage_client()
     s3_client.put_object(b"Test 1", bucket_name_delete, "foo/first_test.txt")
     s3_client.put_object(b"Test 2", bucket_name_delete, "foo/second_test.txt")
     all_objects = list(bucket.objects.all())

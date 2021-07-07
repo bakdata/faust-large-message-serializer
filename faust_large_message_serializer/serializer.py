@@ -1,8 +1,5 @@
 from faust.serializers.codecs import Codec
 
-from faust_large_message_serializer.blob_storage.blog_storage_factory import (
-    BlobStorageFactory,
-)
 from faust_large_message_serializer.clients.retrieving_client import RetrievingClient
 from faust_large_message_serializer.clients.storing_client import StoringClient
 from faust_large_message_serializer.config import LargeMessageSerializerConfig
@@ -22,9 +19,8 @@ class LargeMessageSerializer(Codec):
         self._output_topic = output_topic
         self._config = config
         self._is_key = is_key
-        self._blob_factory = BlobStorageFactory(config)
-        self._storage_client = StoringClient(config, self._blob_factory)
-        self._retriever_client = RetrievingClient(config, self._blob_factory)
+        self._storage_client = StoringClient(config)
+        self._retriever_client = RetrievingClient(config)
 
     def _loads(self, s: bytes) -> bytes:
         return self._retriever_client.retrieve_bytes(s)
