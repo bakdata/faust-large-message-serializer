@@ -27,7 +27,7 @@ The serializer was build to be used with other serializers. The idea is to use t
 import faust
 from faust import Record
 import logging
-from faust_large_message_serializer import S3BackedSerializer
+from faust_large_message_serializer import LargeMessageSerializer, LargeMessageSerializerConfig
 from faust.serializers import codecs
 
 
@@ -41,17 +41,18 @@ class UserModel(Record, serializer="s3_json"):
 credentials = {
     # you can also leave the fields empty 
     # in order to use the default AWS credential chain
-    's3backed.access.key': 'access_key',
-    's3backed.secret.key': 'secret_key'
+    'access.key': 'access_key',
+    'secret.key': 'secret_key'
 }
 
+config = LargeMessageSerializerConfig(base_path="s3://your-bucket-name/",
+                                      max_size=0,
+                                      large_message_s3_region="eu-central-1",
+                                      large_message_s3_access_key=credentials["access.key"],
+                                      large_message_s3_secret_key=credentials["secret.key"])
+
 topic_name = "users_s3"
-s3_backed_serializer = S3BackedSerializer(output_topic=topic_name,
-                                          base_path="s3://your-bucket-name/",
-                                          region_name="eu-central-1",
-                                          s3_credentials=credentials,
-                                          max_size=0,
-                                          is_key=False)
+s3_backed_serializer = LargeMessageSerializer(topic_name, config, is_key=False)
 json_serializer = codecs.get_codec("json")
 
 # Here we use json as the first serializer and
