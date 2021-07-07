@@ -16,7 +16,6 @@ class RetrievingClient:
         self,
         config: LargeMessageSerializerConfig
     ):
-        self._config = config
         self._client = config.get_blob_storage_client()
 
     def retrieve_bytes(self, data: bytes) -> Union[bytes, None]:
