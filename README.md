@@ -37,19 +37,11 @@ class UserModel(Record, serializer="s3_json"):
     last_name: str
 
 
-# Declare the serializers
-credentials = {
-    # you can also leave the fields empty 
-    # in order to use the default AWS credential chain
-    'access.key': 'access_key',
-    'secret.key': 'secret_key'
-}
-
 config = LargeMessageSerializerConfig(base_path="s3://your-bucket-name/",
                                       max_size=0,
                                       large_message_s3_region="eu-central-1",
-                                      large_message_s3_access_key=credentials["access.key"],
-                                      large_message_s3_secret_key=credentials["secret.key"])
+                                      large_message_s3_access_key="access_key",
+                                      large_message_s3_secret_key="secret_key")
 
 topic_name = "users_s3"
 s3_backed_serializer = LargeMessageSerializer(topic_name, config, is_key=False)

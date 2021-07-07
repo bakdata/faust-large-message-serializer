@@ -59,4 +59,4 @@ class BlobStorageFactory:
         try:
             return self._factory_client[schema](config)
         except KeyError as e:
-            raise ValueError("This schema is not supported at the moment") from e
+            raise ValueError(f"The schema {schema} is not supported at the moment") from e
