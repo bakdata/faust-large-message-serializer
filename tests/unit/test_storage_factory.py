@@ -1,7 +1,9 @@
 from unittest.mock import MagicMock
 
 from faust_large_message_serializer import LargeMessageSerializerConfig
-from faust_large_message_serializer.blob_storage.blog_storage_factory import BlobStorageFactory
+from faust_large_message_serializer.blob_storage.blog_storage_factory import (
+    BlobStorageFactory,
+)
 
 
 def test_storage_factory_cache(monkeypatch):
@@ -17,12 +19,9 @@ def test_storage_factory_cache(monkeypatch):
         s3_client_mock,
     )
     config = LargeMessageSerializerConfig(
-        base_path,
-        0,
-        fake_secret,
-        fake_key,
-        region,
-        endpoint_url
+        base_path, 0, fake_secret, fake_key, region, endpoint_url
     )
     factory = BlobStorageFactory(config)
-    assert factory.get_blob_storage_client() == factory.get_blob_storage_client()
+    assert (
+        factory.get_blob_storage_client() == factory.get_blob_storage_client()
+    ), "Client should be cached"

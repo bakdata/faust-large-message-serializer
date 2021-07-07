@@ -27,8 +27,8 @@ class URIParser:
 
 @dataclass
 class LargeMessageSerializerConfig:
-    base_path: Union[str, URIParser]
-    max_size: int
+    base_path: Optional[Union[str, URIParser]] = None
+    max_size: int = 1000 * 1000
     large_message_s3_secret_key: Optional[str] = None
     large_message_s3_access_key: Optional[str] = None
     large_message_s3_region: Optional[str] = None

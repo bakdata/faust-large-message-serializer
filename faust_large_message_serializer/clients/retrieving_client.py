@@ -1,9 +1,9 @@
 from typing import Union
 
-from faust_large_message_serializer.blob_storage.blob_storage import BlobStorageClient
+from loguru import logger
+
 from faust_large_message_serializer.blob_storage.blog_storage_factory import BlobStorageFactory
 from faust_large_message_serializer.config import LargeMessageSerializerConfig, URIParser
-from loguru import logger
 
 
 class RetrievingClient:

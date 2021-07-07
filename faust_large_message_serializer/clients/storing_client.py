@@ -1,10 +1,10 @@
 from typing import Union
 from uuid import uuid4
 
-from faust_large_message_serializer.blob_storage.blob_storage import BlobStorageClient
+from loguru import logger
+
 from faust_large_message_serializer.blob_storage.blog_storage_factory import BlobStorageFactory
 from faust_large_message_serializer.config import LargeMessageSerializerConfig
-from loguru import logger
 
 
 class StoringClient:
@@ -34,6 +34,8 @@ class StoringClient:
             return self.__serialize(data, self.IS_NOT_BACKED)
 
     def __create_blob_storage_key(self, topic: str, is_key: bool) -> str:
+        if self._config.base_path is None:
+            raise ValueError("Base path must not be null")
         prefix = self.KEY_PREFIX if is_key else self.VALUE_PREFIX
         schema, bucket, path = self._config.base_path.parse_uri()
         random_id = str(uuid4())

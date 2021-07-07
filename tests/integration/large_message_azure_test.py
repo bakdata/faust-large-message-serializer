@@ -25,7 +25,6 @@ config = LargeMessageSerializerConfig(
 )
 
 output_topic = "test-serializer"
-serializer = LargeMessageSerializer(output_topic, config)
 
 
 @pytest.fixture(scope="module")
@@ -58,10 +57,21 @@ def azure_bucket_name():
     container_client.delete_container()
 
 
-def test_azure_serializer(wait_for_api, azure_bucket_name):
+def test_azure_serializer_value(wait_for_api, azure_bucket_name):
+    serializer = LargeMessageSerializer(output_topic, config)
     binary_input = b"This is a test for s3"
     abs_uri = serializer.dumps(binary_input)
-    assert abs_uri[0:1] == b"\x01"
+    assert abs_uri[0:1] == b"\x01", "Uri should be backed"
     parser_uri = URIParser(abs_uri[1:].decode())
-    assert f"abs://{azure_bucket_name}/{output_topic}/values" in parser_uri.base_path
-    assert binary_input == serializer.loads(abs_uri)
+    assert f"abs://{azure_bucket_name}/{output_topic}/values" in parser_uri.base_path, "Schema and key-value var should correspond"
+    assert binary_input == serializer.loads(abs_uri), "URI should be unbacked"
+
+
+def test_azure_serializer_key(wait_for_api, azure_bucket_name):
+    serializer = LargeMessageSerializer(output_topic, config, True)
+    binary_input = b"This is a test for s3"
+    abs_uri = serializer.dumps(binary_input)
+    assert abs_uri[0:1] == b"\x01", "Uri should be backed"
+    parser_uri = URIParser(abs_uri[1:].decode())
+    assert f"abs://{azure_bucket_name}/{output_topic}/keys" in parser_uri.base_path, "Schema and key-value var should correspond"
+    assert binary_input == serializer.loads(abs_uri), "URI should be unbacked"

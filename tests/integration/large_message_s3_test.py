@@ -26,7 +26,6 @@ config = LargeMessageSerializerConfig(
 )
 
 output_topic = "test-serializer"
-serializer = LargeMessageSerializer(output_topic, config)
 
 @pytest.fixture(scope="module")
 def wait_for_api(module_scoped_container_getter):
@@ -64,11 +63,21 @@ def s3_bucket_name():
     bucket.delete()
 
 
-def test_s3_serializer(wait_for_api, s3_bucket_name):
-    """The Api is now verified good to go and tests can interact with it"""
+def test_s3_serializer_value(wait_for_api, s3_bucket_name):
+    serializer = LargeMessageSerializer(output_topic, config)
     binary_input = b"This is a test for s3"
     s3_uri = serializer.dumps(binary_input)
     assert s3_uri[0:1] == b"\x01"
     parser_uri = URIParser(s3_uri[1:].decode())
     assert f"s3://{s3_bucket_name}/{output_topic}/values" in parser_uri.base_path
+    assert binary_input == serializer.loads(s3_uri)
+
+
+def test_s3_serializer_key(wait_for_api, s3_bucket_name):
+    serializer = LargeMessageSerializer(output_topic, config, True)
+    binary_input = b"This is a test for s3"
+    s3_uri = serializer.dumps(binary_input)
+    assert s3_uri[0:1] == b"\x01"
+    parser_uri = URIParser(s3_uri[1:].decode())
+    assert f"s3://{s3_bucket_name}/{output_topic}/keys" in parser_uri.base_path
     assert binary_input == serializer.loads(s3_uri)
