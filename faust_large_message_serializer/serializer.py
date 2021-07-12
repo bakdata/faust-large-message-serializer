@@ -1,9 +1,5 @@
 from faust.serializers.codecs import Codec
-
-from faust_large_message_serializer.clients.retrieving_client import RetrievingClient
-from faust_large_message_serializer.clients.storing_client import StoringClient
 from faust_large_message_serializer.config import LargeMessageSerializerConfig
-
 
 class LargeMessageSerializer(Codec):
     def __init__(

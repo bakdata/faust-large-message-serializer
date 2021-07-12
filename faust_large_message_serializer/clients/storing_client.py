@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Optional
 from uuid import uuid4
 
 from loguru import logger
@@ -19,7 +19,9 @@ class StoringClient:
         self._base_path = base_path
         self._max_size = max_size
 
-    def store_bytes(self, topic: str, data: bytes, is_key: bool) -> Union[bytes, None]:
+    def store_bytes(
+        self, topic: str, data: Optional[bytes], is_key: bool
+    ) -> Optional[bytes]:
         if data is None:
             return None
 
@@ -41,9 +43,7 @@ class StoringClient:
         return storage_path
 
     def __needs_backing(self, data: bytes) -> bool:
-        if len(data) > self._max_size:
-            return True
-        return False
+        return len(data) > self._max_size
 
     def __upload_to_blob_storage(self, key: str, data: bytes) -> str:
         _, bucket, _ = self._base_path.parse_uri()

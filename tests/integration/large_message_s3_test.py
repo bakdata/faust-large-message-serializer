@@ -1,17 +1,14 @@
+import boto3
 import pytest
 import requests
-from urllib.parse import urljoin
-import boto3
-
-
-from faust_large_message_serializer.serializer import LargeMessageSerializer
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 from faust_large_message_serializer.config import (
     LargeMessageSerializerConfig,
     URIParser,
 )
-from urllib3.util.retry import Retry
-from requests.adapters import HTTPAdapter
+from faust_large_message_serializer.serializer import LargeMessageSerializer
 
 pytest_plugins = ["docker_compose"]
 

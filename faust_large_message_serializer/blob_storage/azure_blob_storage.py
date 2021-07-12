@@ -16,7 +16,6 @@ class AzureBlobStorageClient(BlobStorageClient):
         for blob in blobs:
             container_client.delete_blob(blob.name)
 
-
     def put_object(self, data: bytes, bucket: str, key: str) -> str:
         container_client = self._abs_client.get_container_client(bucket)
         blob_client = container_client.get_blob_client(key)

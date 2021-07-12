@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Optional
 
 from loguru import logger
 
@@ -16,7 +16,7 @@ class RetrievingClient:
     def __init__(self, client: BlobStorageClient):
         self._client = client
 
-    def retrieve_bytes(self, data: bytes) -> Union[bytes, None]:
+    def retrieve_bytes(self, data: Optional[bytes]) -> Optional[bytes]:
         if data is None:
             return None
 
