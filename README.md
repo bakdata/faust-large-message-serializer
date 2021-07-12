@@ -2,11 +2,11 @@
 [![Python Version](https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8-blue.svg)](https://img.shields.io/badge/python-3.6%20%7C%203.7-blue.svg)
 [![Build Status](https://dev.azure.com/bakdata/public/_apis/build/status/bakdata.faust-s3-backed-serializer?branchName=master)](https://dev.azure.com/bakdata/public/_build/latest?definitionId=22&branchName=master)
 [![PyPI version](https://badge.fury.io/py/faust-s3-backed-serializer.svg)](https://badge.fury.io/py/faust-s3-backed-serializer)
-# faust-s3-backed-serializer
+# faust-large-message-serializer
 
-A Faust Serializer that reads and writes records from and to S3 transparently.
+A Faust Serializer that reads and writes records from and to S3 or Azure Blob Storage transparently.
 
-This serializer is compatible with our [Kafka S3-backed SerDe](https://github.com/bakdata/kafka-s3-backed-serde) for Java.
+This serializer is compatible with our [Kafka large-message-serializer SerDe](https://github.com/bakdata/kafka-large-message-serde) for Java.
 
 Read more about it on our [blog](https://medium.com/bakdata/processing-large-messages-with-kafka-streams-167a166ca38b).
 
@@ -15,7 +15,7 @@ Read more about it on our [blog](https://medium.com/bakdata/processing-large-mes
 #### PyPi
 
 ```
-pip install faust-s3-backed-serializer
+pip install faust-large-message-serializer
 ```
 
 
