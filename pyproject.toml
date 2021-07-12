@@ -4,8 +4,8 @@ build-backend = "flit.buildapi"
 
 
 [tool.flit.metadata]
-module = "faust_s3_backed_serializer"
-dist-name = "faust-s3-backed-serializer"
+module = "faust_large_message_serializer"
+dist-name = "faust-large-message-serializer"
 author = "bakdata"
 author-email = "opensource@bakdata.com"
 home-page = "https://github.com/bakdata/faust-s3-backed-serializer"
@@ -14,7 +14,11 @@ requires-python = ">=3.6"
 requires = [
     "boto3",
     "faust-streaming",
-    "bump2version"
+    "bump2version",
+    "types-boto",
+    "azure-storage-blob",
+    "loguru",
+    "dataclasses; python_version == '3.6'"
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -36,5 +40,14 @@ classifiers = [
 test = [
     "pytest",
     "pytest-cov",
-    "botocore"
+    "botocore",
+    "pytest-docker-compose"
+]
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "--docker-compose=tests/integration/docker-compose.yml"
+testpaths = [
+    "tests/unit",
+    "tests/integration",
 ]

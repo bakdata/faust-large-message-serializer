@@ -2,11 +2,11 @@
 [![Python Version](https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8-blue.svg)](https://img.shields.io/badge/python-3.6%20%7C%203.7-blue.svg)
 [![Build Status](https://dev.azure.com/bakdata/public/_apis/build/status/bakdata.faust-s3-backed-serializer?branchName=master)](https://dev.azure.com/bakdata/public/_build/latest?definitionId=22&branchName=master)
 [![PyPI version](https://badge.fury.io/py/faust-s3-backed-serializer.svg)](https://badge.fury.io/py/faust-s3-backed-serializer)
-# faust-s3-backed-serializer
+# faust-large-message-serializer
 
-A Faust Serializer that reads and writes records from and to S3 transparently.
+A Faust Serializer that reads and writes records from and to S3 or Azure Blob Storage transparently.
 
-This serializer is compatible with our [Kafka S3-backed SerDe](https://github.com/bakdata/kafka-s3-backed-serde) for Java.
+This serializer is compatible with our [Kafka large-message-serializer SerDe](https://github.com/bakdata/kafka-large-message-serde) for Java.
 
 Read more about it on our [blog](https://medium.com/bakdata/processing-large-messages-with-kafka-streams-167a166ca38b).
 
@@ -15,7 +15,7 @@ Read more about it on our [blog](https://medium.com/bakdata/processing-large-mes
 #### PyPi
 
 ```
-pip install faust-s3-backed-serializer
+pip install faust-large-message-serializer
 ```
 
 
@@ -27,7 +27,7 @@ The serializer was build to be used with other serializers. The idea is to use t
 import faust
 from faust import Record
 import logging
-from faust_s3_backed_serializer import S3BackedSerializer
+from faust_large_message_serializer import LargeMessageSerializer, LargeMessageSerializerConfig
 from faust.serializers import codecs
 
 
@@ -37,21 +37,14 @@ class UserModel(Record, serializer="s3_json"):
     last_name: str
 
 
-# Declare the serializers
-credentials = { 
-# you can also leave the fields empty 
-# in order to use the default AWS credential chain
-    's3backed.access.key': 'access_key',
-    's3backed.secret.key': 'secret_key'
-}
+config = LargeMessageSerializerConfig(base_path="s3://your-bucket-name/",
+                                      max_size=0,
+                                      large_message_s3_region="eu-central-1",
+                                      large_message_s3_access_key="access_key",
+                                      large_message_s3_secret_key="secret_key")
 
 topic_name = "users_s3"
-s3_backed_serializer = S3BackedSerializer(output_topic=topic_name,
-                                          base_path="s3://your-bucket-name/",
-                                          region_name="eu-central-1",
-                                          s3_credentials=credentials, 
-                                          max_size=0,
-                                          is_key=False)
+s3_backed_serializer = LargeMessageSerializer(topic_name, config, is_key=False)
 json_serializer = codecs.get_codec("json")
 
 # Here we use json as the first serializer and
