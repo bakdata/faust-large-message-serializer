@@ -1,7 +1,5 @@
-from typing import Optional, Callable, Dict, Tuple, Union
-from urllib.parse import urlparse
-
 from dataclasses import dataclass
+from typing import Optional, Callable, Dict, Union
 
 import boto3
 from azure.storage.blob import BlobServiceClient
@@ -13,27 +11,10 @@ from faust_large_message_serializer.blob_storage.azure_blob_storage import (
     AzureBlobStorageClient,
 )
 from faust_large_message_serializer.blob_storage.blob_storage import BlobStorageClient
-
-
-@dataclass
-class URIParser:
-    base_path: str
-
-    def __post_init__(self):
-        self.base_path = self.base_path.lower()
-
-    def parse_uri(self) -> Tuple[str, str, str]:
-        result = urlparse(self.base_path)
-        scheme = result.scheme
-        bucket = result.netloc
-        if len(result.path) != 0 and result.path[0] == "/":
-            path = result.path[1:]
-        else:
-            path = result.path
-        return scheme, bucket, path
-
-    def __repr__(self):
-        return self.base_path
+from faust_large_message_serializer.blob_storage.empty_blob import EmptyBlobStorage
+from faust_large_message_serializer.clients.retrieving_client import RetrievingClient
+from faust_large_message_serializer.clients.storing_client import StoringClient
+from faust_large_message_serializer.utils.uri_parser import URIParser
 
 
 @dataclass
@@ -57,46 +38,58 @@ class LargeMessageSerializerConfig:
         )
 
         self._factory_client = {
-            AmazonS3Client.PROTOCOL: _create_s3_client,
-            AzureBlobStorageClient.PROTOCOL: _create_azure_blob_storage_client,
+            AmazonS3Client.PROTOCOL: self.__create_s3_client,
+            AzureBlobStorageClient.PROTOCOL: self.__create_azure_blob_storage_client,
         }
 
         self.__client = None
 
-    def get_blob_storage_client(self) -> BlobStorageClient:
-        schema, _, _ = self.base_path.parse_uri()
-        return self.__create_storage_client(schema, self)
+    def __get_blob_storage_client(self) -> BlobStorageClient:
+        schema, _, _ = (
+            self.base_path.parse_uri() if self.base_path is not None else (None,) * 3
+        )
+        return self.__create_blob_storage_client(schema)
 
-    def __create_storage_client(self, schema: str, config):
+    def __create_blob_storage_client(self, schema: str):
         try:
-            self.__client = self.__client or self._factory_client[schema](config)
+            self.__client = (
+                self.__client
+                or self._factory_client.get(schema, self.__create_empty_blob_client())()
+            )
             return self.__client
         except KeyError as e:
             raise ValueError(
                 f"The schema {schema} is not supported at the moment"
             ) from e
 
+    def __create_empty_blob_client(self) -> BlobStorageClient:
+        return EmptyBlobStorage()
 
-def _create_s3_client(config: LargeMessageSerializerConfig) -> BlobStorageClient:
-    s3_config = {
-        "aws_secret_access_key": config.large_message_s3_secret_key,
-        "aws_access_key_id": config.large_message_s3_access_key,
-        "region_name": config.large_message_s3_region,
-    }
-    if config.large_message_s3_endpoint:
-        s3_config["endpoint_url"] = config.large_message_s3_endpoint
+    def __create_s3_client(self) -> BlobStorageClient:
+        s3_config = {
+            "aws_secret_access_key": self.large_message_s3_secret_key,
+            "aws_access_key_id": self.large_message_s3_access_key,
+            "region_name": self.large_message_s3_region,
+        }
+        if self.large_message_s3_endpoint:
+            s3_config["endpoint_url"] = self.large_message_s3_endpoint
 
-    if config.large_message_blob_storage_custom_config:
-        config.large_message_blob_storage_custom_config(s3_config)
-    s3_client = boto3.client("s3", **s3_config)
-    return AmazonS3Client(s3_client)
+        if self.large_message_blob_storage_custom_config:
+            self.large_message_blob_storage_custom_config(s3_config)
+        s3_client = boto3.client("s3", **s3_config)
+        return AmazonS3Client(s3_client)
 
+    def __create_azure_blob_storage_client(self) -> BlobStorageClient:
+        abs_config = {"conn_str": self.large_message_abs_connection_string}
+        if self.large_message_blob_storage_custom_config:
+            self.large_message_blob_storage_custom_config(abs_config)
+        abs_client = BlobServiceClient.from_connection_string(**abs_config)
+        return AzureBlobStorageClient(abs_client)
 
-def _create_azure_blob_storage_client(
-    config: LargeMessageSerializerConfig,
-) -> BlobStorageClient:
-    abs_config = {"conn_str": config.large_message_abs_connection_string}
-    if config.large_message_blob_storage_custom_config:
-        config.large_message_blob_storage_custom_config(abs_config)
-    abs_client = BlobServiceClient.from_connection_string(**abs_config)
-    return AzureBlobStorageClient(abs_client)
+    def create_storing_client(self):
+        return StoringClient(
+            self.__get_blob_storage_client(), self.base_path, self.max_size
+        )
+
+    def create_retrieving_client(self):
+        return RetrievingClient(self.__get_blob_storage_client())

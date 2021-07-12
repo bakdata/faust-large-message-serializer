@@ -105,7 +105,7 @@ def test_s3_storage_client_delete_all(wait_for_api, s3_low_level_client):
     bucket_name_delete = "test-delete-bucket"
     bucket = s3_low_level_client.Bucket(bucket_name_delete)
     bucket.create()
-    s3_client = config.get_blob_storage_client()
+    s3_client = config.create_storing_client()._client
     s3_client.put_object(b"Test 1", bucket_name_delete, "foo/first_test.txt")
     s3_client.put_object(b"Test 2", bucket_name_delete, "foo/second_test.txt")
     all_objects = list(bucket.objects.all())

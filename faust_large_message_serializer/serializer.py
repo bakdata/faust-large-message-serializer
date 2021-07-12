@@ -19,8 +19,8 @@ class LargeMessageSerializer(Codec):
         self._output_topic = output_topic
         self._config = config
         self._is_key = is_key
-        self._storage_client = StoringClient(config)
-        self._retriever_client = RetrievingClient(config)
+        self._storage_client = config.create_storing_client()
+        self._retriever_client = config.create_retrieving_client()
 
     def _loads(self, s: bytes) -> bytes:
         return self._retriever_client.retrieve_bytes(s)

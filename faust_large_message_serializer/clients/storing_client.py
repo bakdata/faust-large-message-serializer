@@ -3,7 +3,8 @@ from uuid import uuid4
 
 from loguru import logger
 
-from faust_large_message_serializer.config import LargeMessageSerializerConfig
+from faust_large_message_serializer.blob_storage.blob_storage import BlobStorageClient
+from faust_large_message_serializer.utils.uri_parser import URIParser
 
 
 class StoringClient:
@@ -13,12 +14,10 @@ class StoringClient:
     IS_BACKED = b"\x01"
     IS_NOT_BACKED = b"\x00"
 
-    def __init__(
-        self,
-        config: LargeMessageSerializerConfig
-    ):
-        self._config = config
-        self._client = config.get_blob_storage_client()
+    def __init__(self, client: BlobStorageClient, base_path: URIParser, max_size: int):
+        self._client = client
+        self._base_path = base_path
+        self._max_size = max_size
 
     def store_bytes(self, topic: str, data: bytes, is_key: bool) -> Union[bytes, None]:
         if data is None:
@@ -32,22 +31,22 @@ class StoringClient:
             return self.__serialize(data, self.IS_NOT_BACKED)
 
     def __create_blob_storage_key(self, topic: str, is_key: bool) -> str:
-        if self._config.base_path is None:
+        if not self._base_path:
             raise ValueError("Base path must not be null")
         prefix = self.KEY_PREFIX if is_key else self.VALUE_PREFIX
-        schema, bucket, path = self._config.base_path.parse_uri()
+        schema, bucket, path = self._base_path.parse_uri()
         random_id = str(uuid4())
         storage_accumulated_path = [path, topic, prefix, random_id]
         storage_path = "/".join(filter(None, storage_accumulated_path))
         return storage_path
 
     def __needs_backing(self, data: bytes) -> bool:
-        if len(data) > self._config.max_size:
+        if len(data) > self._max_size:
             return True
         return False
 
     def __upload_to_blob_storage(self, key: str, data: bytes) -> str:
-        _, bucket, _ = self._config.base_path.parse_uri()
+        _, bucket, _ = self._base_path.parse_uri()
         uri = self._client.put_object(data, bucket, key)
         logger.debug("Stored large message on blob storage: {}", uri)
         return uri

@@ -1,7 +1,5 @@
 from unittest.mock import MagicMock
 
-import pytest
-
 from faust_large_message_serializer.config import LargeMessageSerializerConfig
 
 
@@ -27,12 +25,12 @@ def test_config_callback(monkeypatch):
         "faust_large_message_serializer.config.boto3.client",
         s3_client_mock,
     )
-    config.get_blob_storage_client()
+    config.create_storing_client()
     s3_client_mock.assert_called_once()
     config_callback.assert_called_once()
 
 
-def test_blob_client_Cache(monkeypatch):
+def test_blob_client_cache(monkeypatch):
     bucket_name = "my-test-bucket"
     base_path = f"s3://{bucket_name}"
     fake_secret = "fake_secret"
@@ -48,5 +46,10 @@ def test_blob_client_Cache(monkeypatch):
         base_path, 0, fake_secret, fake_key, region, endpoint_url
     )
     assert (
-        config.get_blob_storage_client() == config.get_blob_storage_client()
+        config.create_storing_client()._client == config.create_storing_client()._client
+    ), "Client should be cached"
+
+    assert (
+        config.create_retrieving_client()._client
+        == config.create_retrieving_client()._client
     ), "Client should be cached"

@@ -88,7 +88,7 @@ def test_azure_client_delete_all(abs_low_level_client):
     container_client = abs_low_level_client.get_container_client(bucket_name_delete)
     container_client.create_container()
 
-    abs_client = config.get_blob_storage_client()
+    abs_client = config.create_storing_client()._client
     abs_client.put_object(b"Test 1", bucket_name_delete, "foo/first_test.txt")
     abs_client.put_object(b"Test 2", bucket_name_delete, "foo/second_test.txt")
     all_objects = list(container_client.list_blobs())

@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from faust_large_message_serializer import LargeMessageSerializerConfig
-
+from faust_large_message_serializer.blob_storage.blob_storage import BlobStorageClient
 from faust_large_message_serializer.clients.storing_client import StoringClient
 
 
@@ -21,60 +21,35 @@ def config_serializer():
     )
 
 
-def test_max_size_storing_should_not_backed(monkeypatch, config_serializer):
+def test_max_size_storing_should_be_backed(monkeypatch, config_serializer):
 
-    s3_client_mock = MagicMock()
-    blob_client = MagicMock()
+    blob_client = MagicMock(specs=BlobStorageClient)
 
-    monkeypatch.setattr(
-        "faust_large_message_serializer.config.boto3.client",
-        s3_client_mock,
-    )
-
-    monkeypatch.setattr(config_serializer, "get_blob_storage_client", blob_client)
-
-    storing_client = StoringClient(config_serializer)
+    storing_client = StoringClient(blob_client, config_serializer.base_path, 0)
 
     storing_client.store_bytes("test-serializer", b"Hello World", False)
 
-    blob_client.assert_called_once()
+    blob_client.put_object.assert_called_once()
 
 
-def test_max_size_storing_should_backed(monkeypatch, config_serializer):
+def test_max_size_storing_should_not_be_backed(monkeypatch, config_serializer):
 
-    s3_client_mock = MagicMock()
     blob_client = MagicMock()
 
-    config_serializer.max_size = 100000
-
-    monkeypatch.setattr(
-        "faust_large_message_serializer.config.boto3.client",
-        s3_client_mock,
+    storing_client = StoringClient(
+        config_serializer, config_serializer.base_path, 10000
     )
-
-    monkeypatch.setattr(config_serializer, "get_blob_storage_client", blob_client)
-
-    storing_client = StoringClient(config_serializer)
 
     storing_client.store_bytes("test-serializer", b"Hello World", False)
 
-    blob_client.assert_not_called()
+    blob_client.put_object.assert_not_called()
 
 
 def test_base_path_should_defined_when_backed(monkeypatch, config_serializer):
 
-    s3_client_mock = MagicMock()
     blob_client = MagicMock()
 
-    config_serializer.max_size = 0
-    config_serializer.base_path = None
-
-    monkeypatch.setattr(
-        "faust_large_message_serializer.config.boto3.client",
-        s3_client_mock,
-    )
-
-    storing_client = StoringClient(config_serializer)
+    storing_client = StoringClient(blob_client, None, 0)
 
     with pytest.raises(ValueError) as e:
         storing_client.store_bytes("test-serializer", b"Hello World", False)
@@ -83,4 +58,4 @@ def test_base_path_should_defined_when_backed(monkeypatch, config_serializer):
         str(e.value) == "Base path must not be null"
     ), "Base path should exists when backed procedure was called"
 
-    blob_client.assert_not_called()
+    blob_client.put_object.assert_not_called()

@@ -2,7 +2,8 @@ from typing import Union
 
 from loguru import logger
 
-from faust_large_message_serializer.config import LargeMessageSerializerConfig, URIParser
+from faust_large_message_serializer.blob_storage.blob_storage import BlobStorageClient
+from faust_large_message_serializer.utils.uri_parser import URIParser
 
 
 class RetrievingClient:
@@ -12,11 +13,8 @@ class RetrievingClient:
     IS_BACKED = b"\x01"
     IS_NOT_BACKED = b"\x00"
 
-    def __init__(
-        self,
-        config: LargeMessageSerializerConfig
-    ):
-        self._client = config.get_blob_storage_client()
+    def __init__(self, client: BlobStorageClient):
+        self._client = client
 
     def retrieve_bytes(self, data: bytes) -> Union[bytes, None]:
         if data is None:
