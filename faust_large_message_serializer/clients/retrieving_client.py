@@ -1,7 +1,5 @@
-from typing import Union, Optional
-
+from typing import Optional
 from loguru import logger
-
 from faust_large_message_serializer.blob_storage.blob_storage import BlobStorageClient
 from faust_large_message_serializer.utils.uri_parser import URIParser
 
