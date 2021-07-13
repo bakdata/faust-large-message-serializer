@@ -16,7 +16,7 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 
-"""Faust serializer that serializes large messages on Amazon S3"""
+"""Faust serializer that serializes large messages on Amazon S3 or Azure Blob Storage"""
 
 __version__ = "1.1.0"
 
