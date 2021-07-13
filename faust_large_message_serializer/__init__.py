@@ -18,7 +18,7 @@
 
 """Faust serializer that serializes large messages on Amazon S3 or Azure Blob Storage"""
 
-__version__ = "1.1.0"
+__version__ = "2.0.0"
 
 from faust_large_message_serializer.serializer import LargeMessageSerializer
 from faust_large_message_serializer.config import LargeMessageSerializerConfig
