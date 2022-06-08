@@ -27,7 +27,7 @@ config = LargeMessageSerializerConfig(
     endpoint_url,
 )
 
-output_topic = "test-serializer"
+output_topic = "test-Serializer"
 
 
 @pytest.fixture(scope="module")

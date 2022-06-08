@@ -24,7 +24,7 @@ config = LargeMessageSerializerConfig(
     large_message_abs_connection_string=f"DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint={endpoint_url}/devstoreaccount1;",
 )
 
-output_topic = "test-serializer"
+output_topic = "test-Serializer"
 
 
 @pytest.fixture(scope="module")
