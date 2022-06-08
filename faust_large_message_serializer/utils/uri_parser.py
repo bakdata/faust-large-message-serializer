@@ -7,8 +7,6 @@ from urllib.parse import urlparse
 class URIParser:
     base_path: str
 
-    def __post_init__(self):
-        self.base_path = self.base_path.lower()
 
     def parse_uri(self) -> Tuple[str, str, str]:
         result = urlparse(self.base_path)
