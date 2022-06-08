@@ -24,7 +24,7 @@ config = LargeMessageSerializerConfig(
     large_message_abs_connection_string=f"DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint={endpoint_url}/devstoreaccount1;",
 )
 
-output_topic = "test-Serializer"
+output_topic = "test-serializer"
 
 
 @pytest.fixture(scope="module")
@@ -55,6 +55,27 @@ def azure_bucket_name():
     container_client.create_container()
     yield bucket_name
     container_client.delete_container()
+
+def test_azure_serializer_value_mixed_case_topic(wait_for_api, azure_bucket_name):
+    my_mixed_case_topic = "myMixedCaseTopic-1"
+    serializer = LargeMessageSerializer(my_mixed_case_topic, config)
+    binary_input = b"This is a test for s3"
+    abs_uri = serializer.dumps(binary_input)
+    assert abs_uri[0:1] == b"\x01", "Uri should be backed"
+    parser_uri = URIParser(abs_uri[1:].decode())
+    assert f"abs://{azure_bucket_name}/{my_mixed_case_topic}/values" in parser_uri.base_path, "Schema and key-value var should correspond"
+    assert binary_input == serializer.loads(abs_uri), "URI should be unbacked"
+
+
+def test_azure_serializer_key_mixed_case_topic(wait_for_api, azure_bucket_name):
+    my_mixed_case_topic = "myMixedCaseTopic-1"
+    serializer = LargeMessageSerializer(my_mixed_case_topic, config, True)
+    binary_input = b"This is a test for s3"
+    abs_uri = serializer.dumps(binary_input)
+    assert abs_uri[0:1] == b"\x01", "Uri should be backed"
+    parser_uri = URIParser(abs_uri[1:].decode())
+    assert f"abs://{azure_bucket_name}/{my_mixed_case_topic}/keys" in parser_uri.base_path, "Schema and key-value var should correspond"
+    assert binary_input == serializer.loads(abs_uri), "URI should be unbacked"
 
 
 def test_azure_serializer_value(wait_for_api, azure_bucket_name):
