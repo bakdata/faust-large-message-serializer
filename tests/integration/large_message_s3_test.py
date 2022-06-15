@@ -80,7 +80,7 @@ def s3_low_level_client():
 
 def test_s3_serializer_value(wait_for_api, s3_bucket_name):
     serializer = LargeMessageSerializer(output_topic, config)
-    binary_input = b"This is a test for s3"
+    binary_input = b"This is a test for a backed message"
     s3_uri = serializer.dumps(binary_input)
     assert s3_uri[0:1] == b"\x01"
     parser_uri = URIParser(s3_uri[1:].decode())
@@ -90,7 +90,7 @@ def test_s3_serializer_value(wait_for_api, s3_bucket_name):
 
 def test_s3_serializer_key(wait_for_api, s3_bucket_name):
     serializer = LargeMessageSerializer(output_topic, config, True)
-    binary_input = b"This is a test for s3"
+    binary_input = b"This is a test for a backed message"
     s3_uri = serializer.dumps(binary_input)
     assert s3_uri[0:1] == b"\x01"
     parser_uri = URIParser(s3_uri[1:].decode())
@@ -101,7 +101,7 @@ def test_s3_serializer_key(wait_for_api, s3_bucket_name):
 def test_s3_serializer_value_mixed_case_topic(wait_for_api, s3_bucket_name):
     my_mixed_case_topic = "myMixedCaseTopic-1"
     serializer = LargeMessageSerializer(my_mixed_case_topic, config)
-    binary_input = b"This is a test for s3"
+    binary_input = b"This is a test for a backed message"
     s3_uri = serializer.dumps(binary_input)
     assert s3_uri[0:1] == b"\x01"
     parser_uri = URIParser(s3_uri[1:].decode())
@@ -112,7 +112,7 @@ def test_s3_serializer_value_mixed_case_topic(wait_for_api, s3_bucket_name):
 def test_s3_serializer_key_mixed_case_topic(wait_for_api, s3_bucket_name):
     my_mixed_case_topic = "myMixedCaseTopic-1"
     serializer = LargeMessageSerializer(my_mixed_case_topic, config, True)
-    binary_input = b"This is a test for s3"
+    binary_input = b"This is a test for a backed message"
     s3_uri = serializer.dumps(binary_input)
     assert s3_uri[0:1] == b"\x01"
     parser_uri = URIParser(s3_uri[1:].decode())
