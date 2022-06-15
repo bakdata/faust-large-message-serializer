@@ -56,10 +56,11 @@ def azure_bucket_name():
     yield bucket_name
     container_client.delete_container()
 
+
 def test_azure_serializer_value_mixed_case_topic(wait_for_api, azure_bucket_name):
     my_mixed_case_topic = "myMixedCaseTopic-1"
     serializer = LargeMessageSerializer(my_mixed_case_topic, config)
-    binary_input = b"This is a test for s3"
+    binary_input = b"This is a test for a backed message"
     abs_uri = serializer.dumps(binary_input)
     assert abs_uri[0:1] == b"\x01", "Uri should be backed"
     parser_uri = URIParser(abs_uri[1:].decode())
@@ -70,7 +71,7 @@ def test_azure_serializer_value_mixed_case_topic(wait_for_api, azure_bucket_name
 def test_azure_serializer_key_mixed_case_topic(wait_for_api, azure_bucket_name):
     my_mixed_case_topic = "myMixedCaseTopic-1"
     serializer = LargeMessageSerializer(my_mixed_case_topic, config, True)
-    binary_input = b"This is a test for s3"
+    binary_input = b"This is a test for a backed message"
     abs_uri = serializer.dumps(binary_input)
     assert abs_uri[0:1] == b"\x01", "Uri should be backed"
     parser_uri = URIParser(abs_uri[1:].decode())
@@ -80,7 +81,7 @@ def test_azure_serializer_key_mixed_case_topic(wait_for_api, azure_bucket_name):
 
 def test_azure_serializer_value(wait_for_api, azure_bucket_name):
     serializer = LargeMessageSerializer(output_topic, config)
-    binary_input = b"This is a test for s3"
+    binary_input = b"This is a test for a backed message"
     abs_uri = serializer.dumps(binary_input)
     assert abs_uri[0:1] == b"\x01", "Uri should be backed"
     parser_uri = URIParser(abs_uri[1:].decode())
@@ -90,7 +91,7 @@ def test_azure_serializer_value(wait_for_api, azure_bucket_name):
 
 def test_azure_serializer_key(wait_for_api, azure_bucket_name):
     serializer = LargeMessageSerializer(output_topic, config, True)
-    binary_input = b"This is a test for s3"
+    binary_input = b"This is a test for a backed message"
     abs_uri = serializer.dumps(binary_input)
     assert abs_uri[0:1] == b"\x01", "Uri should be backed"
     parser_uri = URIParser(abs_uri[1:].decode())
